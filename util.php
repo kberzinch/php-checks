@@ -212,3 +212,12 @@ function installation_id()
     );
     return $installation["id"];
 }
+
+/**
+ * Returns base API URL for this event
+ * @return string the GitHub API base URL
+ */
+function api_base()
+{
+    return "https://".(which_github() === "github.com" ? "api.github.com" : which_github()."/api/v3");
+}
