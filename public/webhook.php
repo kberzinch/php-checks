@@ -191,7 +191,7 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                         [
                             'conclusion' => 'action_required',
                             'completed_at'=>date(DATE_ATOM),
-                            'details_url' => "https://".$_SERVER["SERVER_NAME"]."/".$payload["repository"]["name"]."/".$payload['check_run']['head_sha'].'/'.$payload['check_run']['external_id'].'/plain.txt',,
+                            'details_url' => "https://".$_SERVER["SERVER_NAME"]."/".$payload["repository"]["name"]."/".$payload['check_run']['head_sha'].'/'.$payload['check_run']['external_id'].'/plain.txt',
                             'output' => [
                                 'title' => 'CodeSniffer exited with an unexpected return code '.$return_value,
                                 'summary' => "Please review the output.",
