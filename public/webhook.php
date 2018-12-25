@@ -399,7 +399,7 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                             'completed_at'=>date(DATE_ATOM),
                             'details_url' => "https://".$_SERVER["SERVER_NAME"]."/".$payload["repository"]["name"]."/".$payload['check_run']['head_sha'].'/phpstan/plain.txt',
                             'output' => [
-                                'title' => 'Mess Detector did not output valid XML',
+                                'title' => 'PHPStan did not output valid XML',
                                 'summary' => "Please review the output.",
                             ]
                         ],
