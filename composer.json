@@ -9,7 +9,7 @@
     },
     "autoload": {
         "files": [
-            "SAMLResponse.php"
+            "util.php"
         ]
     }
 }
