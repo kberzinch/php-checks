@@ -1,0 +1,10 @@
+{
+    "require": {
+        "kelvinmo/simplejwt": "@stable",
+        "squizlabs/php_codesniffer": "@stable",
+        "phpmd/phpmd" : "@stable",
+        "phpstan/phpstan" : "@stable",
+        "phpstan/phpstan-strict-rules" : "@stable",
+        "phan/phan": "@stable"
+    }
+}
