@@ -1,5 +1,5 @@
 parameters:
-    excludes_analyse:
-        - %currentWorkingDirectory%/vendor/*
-    includes:
-        - %rootDir%/../phpstan-strict-rules/rules.neon
+  excludes_analyse:
+    - %currentWorkingDirectory%/vendor/*
+  includes:
+    - %rootDir%/../phpstan-strict-rules/rules.neon
