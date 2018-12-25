@@ -54,7 +54,7 @@ function github($url, array $data, $action = "", $accept = "application/vnd.gith
     ]);
     curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($data));
     $response = curl_exec($curl);
-    if (curl_getinfo($ch, CURLINFO_HTTP_CODE) !== $expected_status) {
+    if (curl_getinfo($curl, CURLINFO_HTTP_CODE) !== $expected_status) {
         echo "Error ".$action."\n".$url."\n".json_encode($data)."\n".curl_getinfo($curl, CURLINFO_HTTP_CODE)." ".$response;
         if (!$is_slack) {
             http_response_code(500);
