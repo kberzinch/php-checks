@@ -72,7 +72,7 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                         continue;
                     } elseif (strpos($syntax_log[$i], "PHP Parse error:  syntax error, ") !== FALSE) {
                         $matches = [];
-                        if (1 !== preg_match("/in (.+) on line ([[:digit:]]+)$/", $syntax_log[$i], $matches, PREG_OFFSET_CAPTURE)) {
+                        if (1 !== preg_match("/in (\S+) on line ([[:digit:]]+)$/", $syntax_log[$i], $matches, PREG_OFFSET_CAPTURE)) {
                             echo "Could not parse output from PHP syntax check ".$syntax_log[$i];
                             github(
                                 $payload['check_run']['url'],
@@ -96,7 +96,7 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                         $annotations[] = ['path'=>substr($matches[1][0], 2, strlen($matches[1][0])),'start_line'=>intval($matches[2][0]),'end_line'=>intval($matches[2][0]),'annotation_level'=>'failure','message'=>substr($syntax_log[$i],32, $matches[0][1] - 33)];
                     } elseif (strpos($syntax_log[$i], "PHP Fatal error: ") !== FALSE) {
                         $matches = [];
-                        if (1 !== preg_match("/in (.+) on line ([[:digit:]]+)$/", $syntax_log[$i], $matches, PREG_OFFSET_CAPTURE)) {
+                        if (1 !== preg_match("/in (\S+) on line ([[:digit:]]+)$/", $syntax_log[$i], $matches, PREG_OFFSET_CAPTURE)) {
                             echo "Could not parse output from PHP syntax check ".$syntax_log[$i];
                             github(
                                 $payload['check_run']['url'],
@@ -117,7 +117,7 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                             exit();
                         }
                         $issues += 1;
-                        $annotations[] = ['path'=>substr($matches[1][0], 2, strlen($matches[1][0])),'start_line'=>intval($matches[2][0]),'end_line'=>intval($matches[2][0]),'annotation_level'=>'failure','message'=>substr($syntax_log[$i],18, $matches[0][1] - 33)];
+                        $annotations[] = ['path'=>substr($matches[1][0], 2, strlen($matches[1][0])),'start_line'=>intval($matches[2][0]),'end_line'=>intval($matches[2][0]),'annotation_level'=>'failure','message'=>substr($syntax_log[$i],18, $matches[0][1] - 19)];
                     } elseif (strlen($syntax_log[$i]) === 0) {
                         continue;
                     } else {
