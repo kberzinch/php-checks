@@ -2,7 +2,6 @@
 
 require __DIR__ . '/../vendor/autoload.php';
 require_once '../config.php';
-require_once '../util.php';
 
 $payload = payload();
 

@@ -6,5 +6,10 @@
         "phpstan/phpstan" : "@stable",
         "phpstan/phpstan-strict-rules" : "@stable",
         "phan/phan": "@stable"
+    },
+    "autoload": {
+        "files": [
+            "SAMLResponse.php"
+        ]
     }
 }
