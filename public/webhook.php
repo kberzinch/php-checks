@@ -369,7 +369,7 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                 }
                 break;
             case 'phpstan':
-                passthru('/bin/bash -x -e -o pipefail '.__DIR__.'/../'.$payload['check_run']['external_id'].'.sh '.$payload["repository"]["name"].' > '.$log_location.'/plain.txt 2>&1', $return_value);
+                passthru('/bin/bash -e -o pipefail '.__DIR__.'/../'.$payload['check_run']['external_id'].'.sh '.$payload["repository"]["name"].' > '.$log_location.'/plain.txt 2>&1', $return_value);
                 if ($return_value !== 0 && $return_value !== 1) {
                     echo "phpstan check_run failed with return value ".$return_value;
                     github(
