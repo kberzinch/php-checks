@@ -5,7 +5,7 @@ cd /var/tmp/php-checks/$1
 git checkout $3
 git pull
 
-if [[ "$2" -ne "$(git rev-parse HEAD)" ]]
+if [[ "$2" != "$(git rev-parse HEAD)" ]]
 then
     echo "Branch head does not match requested commit, exiting."
     exit;
