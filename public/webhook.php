@@ -21,6 +21,7 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
             }
             $log_location = __DIR__."/".$payload["repository"]["name"]."/".$payload['check_run']['head_sha']."/codesniffer";
             passthru('/bin/bash -x -e -o pipefail '.__DIR__.'/../phpcbf.sh '.$payload["repository"]["name"].' '.$payload['check_run']['head_sha'].' '.$payload['check_run']['check_suite']['head_branch'].' > '.$log_location.'/phpcbf.txt 2>&1', $return_value);
+            exit();
         }
         if ($payload['action'] !== 'created' && $payload['action'] !== 'rerequested') {
             echo "Action is ".$payload['action'].", ignoring";
