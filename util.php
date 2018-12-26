@@ -10,10 +10,14 @@ function payload()
     global $webhook_secret;
     list($algo, $hash) = explode('=', $_SERVER["HTTP_X_HUB_SIGNATURE"], 2);
     $payload = file_get_contents('php://input');
+    if ($payload === false) {
+        http_response_code(500);
+        die("Could not read php://input");
+    }
     $payloadHash = hash_hmac($algo, $payload, $webhook_secret);
     if ($hash !== $payloadHash) {
         http_response_code(401);
-        die("Signature verification failed.");
+        die("Signature verification failed");
     }
 
     return json_decode($payload, true);
@@ -47,9 +51,12 @@ function github(
     int $expected_status = 201
 ) {
     global $token;
-    global $is_slack;
     global $app_id;
     $curl = curl_init($url);
+    if ($curl === false) {
+        http_response_code(500);
+        exit('Could not initialize cURL');
+    }
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
     curl_setopt($curl, CURLOPT_HTTPHEADER, [
@@ -60,12 +67,9 @@ function github(
     ]);
     curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($data));
     $response = curl_exec($curl);
-    if (curl_getinfo($curl, CURLINFO_HTTP_CODE) !== $expected_status) {
+    if ($response === false || curl_getinfo($curl, CURLINFO_HTTP_CODE) !== $expected_status) {
         echo "Error ".$action."\n".$url."\n".json_encode($data)."\n".curl_getinfo($curl, CURLINFO_HTTP_CODE)." "
             .$response;
-        if (!$is_slack) {
-            http_response_code(500);
-        }
         curl_close($curl);
         exit;
     }
@@ -130,7 +134,13 @@ function app_token()
     global $private_key;
     global $app_id;
 
-    $key = new SimpleJWT\Keys\RSAKey(file_get_contents($private_key[which_github()]), 'pem');
+    $key = file_get_contents($private_key[which_github()]);
+    if ($key === false) {
+        http_response_code(500);
+        exit('Could not read private key for '.which_github());
+    }
+
+    $key = new SimpleJWT\Keys\RSAKey(, 'pem');
     $set = new SimpleJWT\Keys\KeySet();
     $set->add($key);
 

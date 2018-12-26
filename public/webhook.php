@@ -3,6 +3,9 @@
 require __DIR__ . '/../vendor/autoload.php';
 require_once '../config.php';
 
+global $app_id;
+global $checks;
+
 $payload = payload();
 
 switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
@@ -11,14 +14,14 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
         break;
     case "check_run":
         if ($payload['check_run']['check_suite']['app']['id'] !== $app_id[which_github()]) {
-            echo "App ID is ".$payload['check_run']['check_suite']['app']['id']." not ".$app_id[which_github()]
-                .", ignoring";
-            exit();
+            exit(
+                "App ID is ".$payload['check_run']['check_suite']['app']['id']." not ".$app_id[which_github()]
+                .", ignoring"
+            );
         }
         if ($payload['action'] === 'requested_action') {
             if ($payload['requested_action']['identifier'] !== 'phpcbf') {
-                echo "Requested action is ".$payload['requested_action']['identifier'].", ignoring";
-                exit();
+                exit("Requested action is ".$payload['requested_action']['identifier'].", ignoring");
             }
             exec(
                 '/bin/bash -x -e -o pipefail '.__DIR__.'/../phpcbf.sh '.$payload["repository"]["name"].' '
@@ -27,11 +30,10 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                     .'/codesniffer/phpcbf.txt 2>&1',
                 $return_value
             );
-            exit();
+            exit("phpcbf completed with return value ".$return_value);
         }
         if ($payload['action'] !== 'created' && $payload['action'] !== 'rerequested') {
-            echo "Action is ".$payload['action'].", ignoring";
-            exit();
+            exit("Action is ".$payload['action'].", ignoring");
         }
         $token = token();
         github(
@@ -63,7 +65,6 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                     $return_value
                 );
                 if ($return_value !== 0) {
-                    echo "syntax check_run failed with return value ".$return_value;
                     github(
                         $payload['check_run']['url'],
                         [
@@ -80,9 +81,14 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                         "PATCH",
                         200
                     );
-                    exit();
+                    exit("Syntax check failed with return value ".$return_value);
                 }
-                $syntax_log = explode("\n", file_get_contents($log_location."/plain.txt"));
+                $syntax_log = file_get_contents($log_location."/plain.txt")
+                if ($syntax_log === false) {
+                    http_response_code(500);
+                    exit("Could not read syntax log.");
+                }
+                $syntax_log = explode("\n", $syntax_log);
                 $files_with_issues = 0;
                 $issues = 0;
                 $annotations = [];
@@ -100,7 +106,6 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                             $matches,
                             PREG_OFFSET_CAPTURE
                         )) {
-                            echo "Could not parse output from PHP syntax check ".$syntax_log[$i];
                             github(
                                 $payload['check_run']['url'],
                                 [
@@ -117,7 +122,8 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                                 "PATCH",
                                 200
                             );
-                            exit();
+                            http_response_code(500);
+                            exit("Could not parse output from PHP syntax check ".$syntax_log[$i]);
                         }
                         $issues += 1;
                         $annotations[] = [
@@ -135,7 +141,6 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                             $matches,
                             PREG_OFFSET_CAPTURE
                         )) {
-                            echo "Could not parse output from PHP syntax check ".$syntax_log[$i];
                             github(
                                 $payload['check_run']['url'],
                                 [
@@ -152,7 +157,8 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                                 "PATCH",
                                 200
                             );
-                            exit();
+                            http_response_code(500);
+                            exit("Could not parse output from PHP syntax check ".$syntax_log[$i]);
                         }
                         $issues += 1;
                         $annotations[] = [
@@ -165,7 +171,6 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                     } elseif (strlen($syntax_log[$i]) === 0) {
                         continue;
                     } else {
-                        echo "Unexpected output from PHP syntax check: ".$syntax_log[$i];
                         github(
                             $payload['check_run']['url'],
                             [
@@ -182,7 +187,8 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                             "PATCH",
                             200
                         );
-                        exit();
+                        http_response_code(500);
+                        exit("Unexpected output from PHP syntax check: ".$syntax_log[$i]);
                     }
                 }
                 if ($issues == 0) {
@@ -254,7 +260,11 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                     );
                     exit();
                 }
-                $log = json_decode(file_get_contents($log_location."/output.json"), true);
+                $log = file_get_contents($log_location."/output.json")
+                if ($log === false) {
+                    exit("Could not read codesniffer log.");
+                }
+                $log = json_decode($log, true);
                 $files_with_issues = 0;
                 $issues = 0;
                 $fixable = 0;
@@ -579,7 +589,12 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                     );
                     exit();
                 }
-                $log = json_decode(file_get_contents($log_location."/output.json"), true);
+                $log = file_get_contents($log_location."/output.json");
+                if ($log === false) {
+                    http_response_code(500);
+                    exit("Could not read phan output.");
+                }
+                $log = json_decode($log, true);
                 $files_with_issues = 0;
                 $files = [];
                 $issues = 0;
