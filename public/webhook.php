@@ -15,8 +15,8 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
             exit();
         }
         if ($payload['action'] === 'requested_action') {
-            if ($payload['requested_action'] !== 'phpcbf') {
-                echo "Requested action is ".$payload['requested_action'].", ignoring";
+            if ($payload['requested_action']['identifier'] !== 'phpcbf') {
+                echo "Requested action is ".$payload['requested_action']['identifier'].", ignoring";
                 exit();
             }
             $log_location = __DIR__."/".$payload["repository"]["name"]."/".$payload['check_run']['head_sha']."/codesniffer";
