@@ -68,17 +68,17 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                     );
                     exit();
                 }
-                $syntax_log = explode("\n",file_get_contents($log_location."/plain.txt"));
+                $syntax_log = explode("\n", file_get_contents($log_location."/plain.txt"));
                 $files_with_issues = 0;
                 $issues = 0;
                 $annotations = [];
                 for ($i = 0; $i < count($syntax_log); $i++) {
-                    if (strpos($syntax_log[$i], "No syntax errors detected in ") !== FALSE) {
+                    if (strpos($syntax_log[$i], "No syntax errors detected in ") !== false) {
                         continue;
-                    } elseif (strpos($syntax_log[$i], "Errors parsing ") !== FALSE) {
+                    } elseif (strpos($syntax_log[$i], "Errors parsing ") !== false) {
                         $files_with_issues += 1;
                         continue;
-                    } elseif (strpos($syntax_log[$i], "PHP Parse error:  syntax error, ") !== FALSE) {
+                    } elseif (strpos($syntax_log[$i], "PHP Parse error:  syntax error, ") !== false) {
                         $matches = [];
                         if (1 !== preg_match("/in (\S+) on line ([[:digit:]]+)$/", $syntax_log[$i], $matches, PREG_OFFSET_CAPTURE)) {
                             echo "Could not parse output from PHP syntax check ".$syntax_log[$i];
@@ -101,8 +101,8 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                             exit();
                         }
                         $issues += 1;
-                        $annotations[] = ['path'=>substr($matches[1][0], 2, strlen($matches[1][0])),'start_line'=>intval($matches[2][0]),'end_line'=>intval($matches[2][0]),'annotation_level'=>'failure','message'=>substr($syntax_log[$i],32, $matches[0][1] - 33)];
-                    } elseif (strpos($syntax_log[$i], "PHP Fatal error: ") !== FALSE) {
+                        $annotations[] = ['path'=>substr($matches[1][0], 2, strlen($matches[1][0])),'start_line'=>intval($matches[2][0]),'end_line'=>intval($matches[2][0]),'annotation_level'=>'failure','message'=>substr($syntax_log[$i], 32, $matches[0][1] - 33)];
+                    } elseif (strpos($syntax_log[$i], "PHP Fatal error: ") !== false) {
                         $matches = [];
                         if (1 !== preg_match("/in (\S+) on line ([[:digit:]]+)$/", $syntax_log[$i], $matches, PREG_OFFSET_CAPTURE)) {
                             echo "Could not parse output from PHP syntax check ".$syntax_log[$i];
@@ -125,7 +125,7 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                             exit();
                         }
                         $issues += 1;
-                        $annotations[] = ['path'=>substr($matches[1][0], 2, strlen($matches[1][0])),'start_line'=>intval($matches[2][0]),'end_line'=>intval($matches[2][0]),'annotation_level'=>'failure','message'=>substr($syntax_log[$i],18, $matches[0][1] - 19)];
+                        $annotations[] = ['path'=>substr($matches[1][0], 2, strlen($matches[1][0])),'start_line'=>intval($matches[2][0]),'end_line'=>intval($matches[2][0]),'annotation_level'=>'failure','message'=>substr($syntax_log[$i], 18, $matches[0][1] - 19)];
                     } elseif (strlen($syntax_log[$i]) === 0) {
                         continue;
                     } else {
@@ -303,7 +303,7 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                     exit();
                 }
                 $xml = simplexml_load_file($log_location."/output.xml");
-                if ($xml === FALSE) {
+                if ($xml === false) {
                     github(
                         $payload['check_run']['url'],
                         [
@@ -404,7 +404,7 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                     exit();
                 }
                 $xml = simplexml_load_file($log_location."/plain.txt");
-                if ($xml === FALSE) {
+                if ($xml === false) {
                     github(
                         $payload['check_run']['url'],
                         [
@@ -566,36 +566,36 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                     }
                 }
                 break;
-            }
-            break;
-        case "check_suite":
-            if ($payload['action'] !== 'requested' && $payload['action'] !== 'rerequested') {
-                echo "Action is ".$payload['action'].", ignoring";
-                exit();
-            }
-            $token = token();
-            $return_value = 0;
-            passthru('/bin/bash -x -e -o pipefail '.__DIR__.'/../checkout.sh '.$payload["repository"]["name"].' '.add_access_token($payload["repository"]["clone_url"]).' '.$payload['check_suite']['head_sha'], $return_value);
-            if ($return_value !== 0) {
-                echo "Checkout failed with return value ".$return_value.", see output above.";
-                exit();
-            }
+        }
+        break;
+    case "check_suite":
+        if ($payload['action'] !== 'requested' && $payload['action'] !== 'rerequested') {
+            echo "Action is ".$payload['action'].", ignoring";
+            exit();
+        }
+        $token = token();
+        $return_value = 0;
+        passthru('/bin/bash -x -e -o pipefail '.__DIR__.'/../checkout.sh '.$payload["repository"]["name"].' '.add_access_token($payload["repository"]["clone_url"]).' '.$payload['check_suite']['head_sha'], $return_value);
+        if ($return_value !== 0) {
+            echo "Checkout failed with return value ".$return_value.", see output above.";
+            exit();
+        }
 
-            foreach ($checks as $name => $external_id) {
-                github(
-                    $payload['repository']['url'].'/check-runs',
-                    [
-                        'name' => $name,
-                        'head_sha' => $payload['check_suite']['head_sha'],
-                        'details_url' => "https://".$_SERVER["SERVER_NAME"]."/".$payload["repository"]["name"]."/".$payload['check_suite']['head_sha'].$external_id,
-                        'external_id' => $external_id,
-                    ],
-                    'creating check run for '.$external_id,
-                    'application/vnd.github.antiope-preview+json'
-                );
-            }
-            break;
-        default:
-            echo "Unrecognized event ".$_SERVER["HTTP_X_GITHUB_EVENT"];
-            break;
+        foreach ($checks as $name => $external_id) {
+            github(
+                $payload['repository']['url'].'/check-runs',
+                [
+                    'name' => $name,
+                    'head_sha' => $payload['check_suite']['head_sha'],
+                    'details_url' => "https://".$_SERVER["SERVER_NAME"]."/".$payload["repository"]["name"]."/".$payload['check_suite']['head_sha'].$external_id,
+                    'external_id' => $external_id,
+                ],
+                'creating check run for '.$external_id,
+                'application/vnd.github.antiope-preview+json'
+            );
+        }
+        break;
+    default:
+        echo "Unrecognized event ".$_SERVER["HTTP_X_GITHUB_EVENT"];
+        break;
 }
