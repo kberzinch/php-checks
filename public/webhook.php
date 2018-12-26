@@ -260,7 +260,7 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                     );
                     exit();
                 }
-                $log = file_get_contents($log_location."/output.json")
+                $log = file_get_contents($log_location."/output.json");
                 if ($log === false) {
                     exit("Could not read codesniffer log.");
                 }
