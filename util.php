@@ -45,8 +45,7 @@ function github(
     string $accept = "application/vnd.github.machine-man-preview+json",
     string $method = "POST",
     int $expected_status = 201
-)
-{
+) {
     global $token;
     global $is_slack;
     global $app_id;
@@ -62,7 +61,8 @@ function github(
     curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($data));
     $response = curl_exec($curl);
     if (curl_getinfo($curl, CURLINFO_HTTP_CODE) !== $expected_status) {
-        echo "Error ".$action."\n".$url."\n".json_encode($data)."\n".curl_getinfo($curl, CURLINFO_HTTP_CODE)." ".$response;
+        echo "Error ".$action."\n".$url."\n".json_encode($data)."\n".curl_getinfo($curl, CURLINFO_HTTP_CODE)." "
+            .$response;
         if (!$is_slack) {
             http_response_code(500);
         }
