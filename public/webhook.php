@@ -319,7 +319,8 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                                 'actions' => ( $fixable > 0 ? [
                                     [
                                         'label' => 'Fix Issues',
-                                        'description' => 'Automatically fix '.$fixable.' issue'.($fixable === 1 ? '' : 's'),
+                                        'description' => 'Automatically fix '.$fixable.' issue'
+                                            .($fixable === 1 ? '' : 's'),
                                         'identifier' => 'phpcbf'
                                     ]
                                 ] : [])
@@ -554,8 +555,8 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                 break;
             case 'phan':
                 exec(
-                    '/bin/bash -x -e -o pipefail '.__DIR__.'/../phan.sh '.$payload["repository"]["name"].' '.$log_location
-                        .'/output.json > '.$log_file.' 2>&1',
+                    '/bin/bash -x -e -o pipefail '.__DIR__.'/../phan.sh '.$payload["repository"]["name"].' '
+                        .$log_location.'/output.json > '.$log_file.' 2>&1',
                     $return_value
                 );
                 if ($return_value !== 0 && $return_value !== 1) {

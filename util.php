@@ -24,7 +24,7 @@ function payload()
  * @param  string $url The URL to tokenize
  * @return string      The URL, possibly with an authentication token inserted
  */
-function add_access_token($url)
+function add_access_token(string $url)
 {
     global $token;
     $clone_url = explode("/", $url);
@@ -38,7 +38,14 @@ function add_access_token($url)
  * @param  array  $data The data to send
  * @SuppressWarnings(PHPMD.ExitExpression)
  */
-function github($url, array $data, $action = "", $accept = "application/vnd.github.machine-man-preview+json", $method = "POST", $expected_status = 201)
+function github(
+    string $url,
+    array $data,
+    string $action = "",
+    string $accept = "application/vnd.github.machine-man-preview+json",
+    string $method = "POST",
+    int $expected_status = 201
+)
 {
     global $token;
     global $is_slack;
@@ -64,60 +71,6 @@ function github($url, array $data, $action = "", $accept = "application/vnd.gith
     }
     curl_close($curl);
     return json_decode($response, true);
-}
-
-/**
- * Sends a status for this deployment to the GitHub API
- * @param string $state       (pending|success|error|inactive|failure)
- * @param string $description A description. This is not displayed anywhere as far as I can tell.
- */
-function set_status($state, $description)
-{
-    global $payload;
-    global $log_location;
-    static $didfail = false;
-    if ($state === "failure") {
-        $didfail = true;
-    }
-    if ($state === "error") {
-        $didfail = true;
-    }
-    if ($didfail && $state === "success") {
-        return; // don't send this
-    }
-    if ($_SERVER["HTTP_X_GITHUB_EVENT"] !== "deployment") {
-        return;
-    }
-    github(
-        $payload["deployment"]["statuses_url"],
-        [
-            "state" => $state,
-            "log_url" => "https://".$_SERVER["SERVER_NAME"]."/"
-                .$payload["repository"]["name"]."/".$payload["deployment"]["environment"]."/".$payload["deployment"]["sha"]."/".$payload["deployment"]["id"].($state === "pending" ? "/" : "/plain.txt"),
-            "description" => $description
-        ],
-        "setting status",
-        "application/vnd.github.ant-man-preview+json"
-    );
-    if ($state !== "pending") {
-        file_put_contents($log_location."/plain.txt", "\n# ".$description."\n", FILE_APPEND);
-    }
-}
-
-/**
- * Triggers a deployment for the ref that triggered this event
- */
-function trigger_deployment($ref, $environment)
-{
-    global $payload;
-    github(
-        $payload["repository"]["deployments_url"],
-        [
-            "ref" => $ref,
-            "environment" => $environment
-        ],
-        "triggering deployment"
-    );
 }
 
 /**
