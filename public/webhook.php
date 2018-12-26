@@ -14,6 +14,13 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
             echo "App ID is ".$payload['check_run']['check_suite']['app']['id']." not ".$app_id[which_github()].", ignoring";
             exit();
         }
+        if ($payload['action'] === 'requested_action') {
+            if ($payload['requested_action'] !== 'phpcbf') {
+                echo "Requested action is ".$payload['requested_action'].", ignoring";
+                exit();
+            }
+            passthru('/bin/bash -x -e -o pipefail '.__DIR__.'/../phpcbf.sh '.$payload["repository"]["name"].' '.$payload['check_run']['head_sha'].' '.$payload['check_run']['check_suite']['head_branch'].' > '.$log_location.'/phpcbf.txt 2>&1', $return_value);
+        }
         if ($payload['action'] !== 'created' && $payload['action'] !== 'rerequested') {
             echo "Action is ".$payload['action'].", ignoring";
             exit();
