@@ -430,7 +430,7 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                                 'output' => [
                                     'title' => 'Found '.$issues.' issue'.( $issues === 1 ? '' : 's').' in '
                                         .$files_with_issues.' file'.( $files_with_issues === 1 ? '' : 's' ),
-                                    'summary' => ( $issues === 1 ? 'A mess was' : 'Messes were' ) \
+                                    'summary' => ( $issues === 1 ? 'A mess was' : 'Messes were' )
                                         ." detected in the below file".( $files_with_issues === 1 ? '' : 's' ).".",
                                     'annotations' => $chunks[$i]
                                 ]
