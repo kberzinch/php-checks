@@ -83,7 +83,7 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                     );
                     exit("Syntax check failed with return value ".$return_value);
                 }
-                $syntax_log = file_get_contents($log_location."/plain.txt")
+                $syntax_log = file_get_contents($log_location."/plain.txt");
                 if ($syntax_log === false) {
                     http_response_code(500);
                     exit("Could not read syntax log.");

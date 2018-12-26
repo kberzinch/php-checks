@@ -140,7 +140,7 @@ function app_token()
         exit('Could not read private key for '.which_github());
     }
 
-    $key = new SimpleJWT\Keys\RSAKey(, 'pem');
+    $key = new SimpleJWT\Keys\RSAKey($key, 'pem');
     $set = new SimpleJWT\Keys\KeySet();
     $set->add($key);
 
