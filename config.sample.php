@@ -19,3 +19,10 @@ $private_key["github.com"] = '/opt/deploy/your-github-app.pem';
  * The ID of your GitHub app
  */
 $app_id["github.com"] = 15018;
+
+$checks = [];
+$checks['Syntax'] = 'syntax';
+$checks['CodeSniffer'] = 'codesniffer';
+$checks['Mess Detector'] = 'messdetector';
+$checks['PHPStan'] = 'phpstan';
+$checks['Phan'] = 'phan';

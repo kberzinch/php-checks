@@ -567,13 +567,6 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                 exit();
             }
 
-            $checks = [];
-            $checks['Syntax'] = 'syntax';
-            $checks['CodeSniffer'] = 'codesniffer';
-            $checks['Mess Detector'] = 'messdetector';
-            $checks['PHPStan'] = 'phpstan';
-            $checks['Phan'] = 'phan';
-
             foreach ($checks as $name => $external_id) {
                 github(
                     $payload['repository']['url'].'/check-runs',
