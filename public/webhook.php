@@ -206,6 +206,7 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                 $log = json_decode(file_get_contents($log_location."/output.json"), true);
                 $files_with_issues = 0;
                 $issues = 0;
+                $fixable = 0;
                 $annotations = [];
                 $phpcs_to_github = [];
                 $phpcs_to_github["ERROR"] = "failure";
@@ -220,6 +221,9 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                             'annotation_level'=>$phpcs_to_github[$message['type']],
                             'message'=>$message['message'],
                         ];
+                        if ($message['fixable'] === true) {
+                            $fixable++;
+                        }
                     }
                     if (count($file['messages']) > 0) {
                         $files_with_issues++;
@@ -254,8 +258,9 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                                 'details_url' => "https://".$_SERVER["SERVER_NAME"]."/".$payload["repository"]["name"]."/".$payload['check_run']['head_sha'].'/codesniffer/plain.txt',
                                 'output' => [
                                     'title' => 'Found '.$issues.' issue'.( $issues === 1 ? '' : 's').' in '.$files_with_issues.' file'.( $files_with_issues === 1 ? '' : 's' ),
-                                    'summary' => "The below file".( $files_with_issues === 1 ? '' : 's' )." do".( $files_with_issues === 1 ? 'es' : '' )." not comply with the PSR-2 style standard.",
-                                    'annotations' => $chunks[$i]
+                                    'summary' => "The below file".( $files_with_issues === 1 ? '' : 's' )." do".( $files_with_issues === 1 ? 'es' : '' )." not comply with the PSR-2 style standard.\n\n".$fixable." issue".( $fixable === 1 ? 's' : '' )." can be fixed automatically.",
+                                    'annotations' => $chunks[$i],
+                                    'actions' => ( $fixable > 0 ? [['label' => 'Fix Issues', 'description' => 'Automatically fix '.$fixable.' issues', 'identifier' => 'phpcbf']] : [])
                                 ]
                             ],
                             "reporting codesniffer check failure",
