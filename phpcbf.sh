@@ -14,5 +14,5 @@ fi
 ! $(dirname "$0")/vendor/bin/phpcbf --ignore=vendor --standard=psr2 .
 
 git add .
-git commit --author="PHP Checks <php-checks@kberzin.ch>" -m "Fix style issues"
+GIT_COMMITTER_NAME='PHP Checks' GIT_COMMITTER_EMAIL='php-checks@kberzin.ch' git commit --author="PHP Checks <php-checks@kberzin.ch>" -m "Fix style issues"
 git push origin $3
