@@ -11,8 +11,8 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
         break;
     case "check_run":
         if ($payload['check_run']['check_suite']['app']['id'] !== $app_id[which_github()]) {
-            echo "App ID is ".$payload['check_run']['check_suite']['app']['id']." not ".$app_id[which_github()] \
-            .", ignoring";
+            echo "App ID is ".$payload['check_run']['check_suite']['app']['id']." not ".$app_id[which_github()]
+                .", ignoring";
             exit();
         }
         if ($payload['action'] === 'requested_action') {
@@ -21,9 +21,9 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                 exit();
             }
             exec(
-                '/bin/bash -x -e -o pipefail '.__DIR__.'/../phpcbf.sh '.$payload["repository"]["name"].' ' \
-                    .$payload['check_run']['head_sha'].' '.$payload['check_run']['check_suite']['head_branch'].' > ' \
-                    .__DIR__."/".$payload["repository"]["name"]."/".$payload['check_run']['head_sha'] \
+                '/bin/bash -x -e -o pipefail '.__DIR__.'/../phpcbf.sh '.$payload["repository"]["name"].' '
+                    .$payload['check_run']['head_sha'].' '.$payload['check_run']['check_suite']['head_branch'].' > '
+                    .__DIR__."/".$payload["repository"]["name"]."/".$payload['check_run']['head_sha']
                     .'/codesniffer/phpcbf.txt 2>&1',
                 $return_value
             );
@@ -45,10 +45,10 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
             "PATCH",
             200
         );
-        $log_location = __DIR__."/".$payload["repository"]["name"]."/".$payload['check_run']['head_sha']."/" \
+        $log_location = __DIR__."/".$payload["repository"]["name"]."/".$payload['check_run']['head_sha']."/"
             .$payload['check_run']['external_id'];
         $log_file = $log_location."/plain.txt";
-        $plain_log_url = "https://".$_SERVER["SERVER_NAME"]."/".$payload["repository"]["name"]."/" \
+        $plain_log_url = "https://".$_SERVER["SERVER_NAME"]."/".$payload["repository"]["name"]."/"
             .$payload['check_run']['head_sha'].'/'.$payload['check_run']['external_id'].'/plain.txt';
         mkdir($log_location, 0700, true);
         copy(__DIR__."/../log-index.html", $log_location."/index.html");
@@ -58,7 +58,7 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
         switch ($payload['check_run']['external_id']) {
             case 'syntax':
                 exec(
-                    '/bin/bash -e -o pipefail '.__DIR__.'/../syntax.sh '.$payload["repository"]["name"].' > '.$log_file \
+                    '/bin/bash -e -o pipefail '.__DIR__.'/../syntax.sh '.$payload["repository"]["name"].' > '.$log_file
                         .' 2>&1',
                     $return_value
                 );
@@ -213,9 +213,9 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                                 'completed_at'=>date(DATE_ATOM),
                                 'details_url' => $plain_log_url,
                                 'output' => [
-                                    'title' => 'Found '.$issues.' issue'.( $issues === 1 ? '' : 's').' in ' \
+                                    'title' => 'Found '.$issues.' issue'.( $issues === 1 ? '' : 's').' in '
                                         .$files_with_issues.' file'.( $files_with_issues === 1 ? '' : 's' ),
-                                    'summary' => "PHP was unable to parse the below file" \
+                                    'summary' => "PHP was unable to parse the below file"
                                         .( $files_with_issues === 1 ? '.' : 's.' ),
                                     'annotations' => $chunks[$i]
                                 ]
@@ -230,7 +230,7 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                 break;
             case 'codesniffer':
                 exec(
-                    '/bin/bash -x -e -o pipefail '.__DIR__.'/../codesniffer.sh '.$payload["repository"]["name"].' ' \
+                    '/bin/bash -x -e -o pipefail '.__DIR__.'/../codesniffer.sh '.$payload["repository"]["name"].' '
                         .$log_location.'/output.json > '.$log_file.' 2>&1',
                     $return_value
                 );
@@ -308,11 +308,11 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                                 'completed_at'=>date(DATE_ATOM),
                                 'details_url' => $plain_log_url,
                                 'output' => [
-                                    'title' => 'Found '.$issues.' issue'.($issues === 1 ? '' : 's').' in ' \
+                                    'title' => 'Found '.$issues.' issue'.($issues === 1 ? '' : 's').' in '
                                         .$files_with_issues.' file'.($files_with_issues === 1 ? '' : 's'),
-                                    'summary' => "The below file".($files_with_issues === 1 ? '' : 's')." do" \
-                                        .($files_with_issues === 1 ? 'es' : '')." not comply with the PSR-2 style " \
-                                        ."standard.\n\n".$fixable." issue".($fixable === 1 ? '' : 's')." can be fixed " \
+                                    'summary' => "The below file".($files_with_issues === 1 ? '' : 's')." do"
+                                        .($files_with_issues === 1 ? 'es' : '')." not comply with the PSR-2 style "
+                                        ."standard.\n\n".$fixable." issue".($fixable === 1 ? '' : 's')." can be fixed "
                                         ." automatically.",
                                     'annotations' => $chunks[$i]
                                 ],
@@ -334,7 +334,7 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                 break;
             case 'messdetector':
                 exec(
-                    '/bin/bash -x -e -o pipefail '.__DIR__.'/../messdetector.sh '.$payload["repository"]["name"].' ' \
+                    '/bin/bash -x -e -o pipefail '.__DIR__.'/../messdetector.sh '.$payload["repository"]["name"].' '
                         .$log_location.'/output.xml > '.$log_file.' 2>&1',
                     $return_value
                 );
@@ -428,7 +428,7 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                                 'completed_at'=>date(DATE_ATOM),
                                 'details_url' => $plain_log_url,
                                 'output' => [
-                                    'title' => 'Found '.$issues.' issue'.( $issues === 1 ? '' : 's').' in ' \
+                                    'title' => 'Found '.$issues.' issue'.( $issues === 1 ? '' : 's').' in '
                                         .$files_with_issues.' file'.( $files_with_issues === 1 ? '' : 's' ),
                                     'summary' => ( $issues === 1 ? 'A mess was' : 'Messes were' ) \
                                         ." detected in the below file".( $files_with_issues === 1 ? '' : 's' ).".",
@@ -445,7 +445,7 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                 break;
             case 'phpstan':
                 exec(
-                    '/bin/bash -e -o pipefail '.__DIR__.'/../phpstan.sh '.$payload["repository"]["name"].' > '.$log_file \
+                    '/bin/bash -e -o pipefail '.__DIR__.'/../phpstan.sh '.$payload["repository"]["name"].' > '.$log_file
                         .' 2>&1',
                     $return_value
                 );
@@ -537,9 +537,9 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                                 'completed_at'=>date(DATE_ATOM),
                                 'details_url' => $plain_log_url,
                                 'output' => [
-                                    'title' => 'Found '.$issues.' issue'.( $issues === 1 ? '' : 's').' in ' \
+                                    'title' => 'Found '.$issues.' issue'.( $issues === 1 ? '' : 's').' in '
                                         .$files_with_issues.' file'.( $files_with_issues === 1 ? '' : 's' ),
-                                    'summary' => ($issues === 1 ? 'An issue was' : 'Issues were') \
+                                    'summary' => ($issues === 1 ? 'An issue was' : 'Issues were')
                                         ." found in the below file".( $files_with_issues === 1 ? '' : 's' ).".",
                                     'annotations' => $chunks[$i]
                                 ]
@@ -554,7 +554,7 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                 break;
             case 'phan':
                 exec(
-                    '/bin/bash -x -e -o pipefail '.__DIR__.'/../phan.sh '.$payload["repository"]["name"].' '.$log_location \
+                    '/bin/bash -x -e -o pipefail '.__DIR__.'/../phan.sh '.$payload["repository"]["name"].' '.$log_location
                         .'/output.json > '.$log_file.' 2>&1',
                     $return_value
                 );
@@ -633,9 +633,9 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                                 'completed_at'=>date(DATE_ATOM),
                                 'details_url' => $plain_log_url,
                                 'output' => [
-                                    'title' => 'Found '.$issues.' issue'.( $issues === 1 ? '' : 's').' in ' \
+                                    'title' => 'Found '.$issues.' issue'.( $issues === 1 ? '' : 's').' in '
                                         .$files_with_issues.' file'.( $files_with_issues === 1 ? '' : 's' ),
-                                    'summary' => ( $issues === 1 ? 'An issue was' : 'Issues were' ) \
+                                    'summary' => ( $issues === 1 ? 'An issue was' : 'Issues were' )
                                         ." found in the below file".( $files_with_issues === 1 ? '' : 's' ).".",
                                     'annotations' => $chunks[$i]
                                 ]
@@ -658,7 +658,7 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
         $token = token();
         $return_value = 0;
         passthru(
-            '/bin/bash -x -e -o pipefail '.__DIR__.'/../checkout.sh '.$payload["repository"]["name"].' ' \
+            '/bin/bash -x -e -o pipefail '.__DIR__.'/../checkout.sh '.$payload["repository"]["name"].' '
                 .add_access_token($payload["repository"]["clone_url"]).' '.$payload['check_suite']['head_sha'],
             $return_value
         );
@@ -672,7 +672,7 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                 [
                     'name' => $name,
                     'head_sha' => $payload['check_suite']['head_sha'],
-                    'details_url' => "https://".$_SERVER["SERVER_NAME"]."/".$payload["repository"]["name"]."/" \
+                    'details_url' => "https://".$_SERVER["SERVER_NAME"]."/".$payload["repository"]["name"]."/"
                         .$payload['check_suite']['head_sha'].$external_id,
                     'external_id' => $external_id,
                 ],
