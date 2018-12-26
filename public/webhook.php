@@ -11,7 +11,8 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
         break;
     case "check_run":
         if ($payload['check_run']['check_suite']['app']['id'] !== $app_id[which_github()]) {
-            echo "App ID is ".$payload['check_run']['check_suite']['app']['id']." not ".$app_id[which_github()].", ignoring";
+            echo "App ID is ".$payload['check_run']['check_suite']['app']['id']." not ".$app_id[which_github()] \
+            .", ignoring";
             exit();
         }
         if ($payload['action'] === 'requested_action') {
@@ -19,8 +20,13 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                 echo "Requested action is ".$payload['requested_action']['identifier'].", ignoring";
                 exit();
             }
-            $log_location = __DIR__."/".$payload["repository"]["name"]."/".$payload['check_run']['head_sha']."/codesniffer";
-            passthru('/bin/bash -x -e -o pipefail '.__DIR__.'/../phpcbf.sh '.$payload["repository"]["name"].' '.$payload['check_run']['head_sha'].' '.$payload['check_run']['check_suite']['head_branch'].' > '.$log_location.'/phpcbf.txt 2>&1', $return_value);
+            exec(
+                '/bin/bash -x -e -o pipefail '.__DIR__.'/../phpcbf.sh '.$payload["repository"]["name"].' ' \
+                    .$payload['check_run']['head_sha'].' '.$payload['check_run']['check_suite']['head_branch'].' > ' \
+                    .__DIR__."/".$payload["repository"]["name"]."/".$payload['check_run']['head_sha'] \
+                    .'/codesniffer/phpcbf.txt 2>&1',
+                $return_value
+            );
             exit();
         }
         if ($payload['action'] !== 'created' && $payload['action'] !== 'rerequested') {
@@ -39,7 +45,11 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
             "PATCH",
             200
         );
-        $log_location = __DIR__."/".$payload["repository"]["name"]."/".$payload['check_run']['head_sha']."/".$payload['check_run']['external_id'];
+        $log_location = __DIR__."/".$payload["repository"]["name"]."/".$payload['check_run']['head_sha']."/" \
+            .$payload['check_run']['external_id'];
+        $log_file = $log_location."/plain.txt";
+        $plain_log_url = "https://".$_SERVER["SERVER_NAME"]."/".$payload["repository"]["name"]."/" \
+            .$payload['check_run']['head_sha'].'/'.$payload['check_run']['external_id'].'/plain.txt';
         mkdir($log_location, 0700, true);
         copy(__DIR__."/../log-index.html", $log_location."/index.html");
         copy(__DIR__."/../worker.js", $log_location."/worker.js");
@@ -47,7 +57,11 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
 
         switch ($payload['check_run']['external_id']) {
             case 'syntax':
-                passthru('/bin/bash -e -o pipefail '.__DIR__.'/../'.$payload['check_run']['external_id'].'.sh '.$payload["repository"]["name"].' > '.$log_location.'/plain.txt 2>&1', $return_value);
+                exec(
+                    '/bin/bash -e -o pipefail '.__DIR__.'/../syntax.sh '.$payload["repository"]["name"].' > '.$log_file \
+                        .' 2>&1',
+                    $return_value
+                );
                 if ($return_value !== 0) {
                     echo "syntax check_run failed with return value ".$return_value;
                     github(
@@ -55,7 +69,7 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                         [
                             'conclusion' => 'action_required',
                             'completed_at'=>date(DATE_ATOM),
-                            'details_url' => "https://".$_SERVER["SERVER_NAME"]."/".$payload["repository"]["name"]."/".$payload['check_run']['head_sha'].'/'.$payload['check_run']['external_id'].'/plain.txt',
+                            'details_url' => $plain_log_url,
                             'output' => [
                                 'title' => 'Syntax check exited with an unexpected return code '.$return_value,
                                 'summary' => "Please review the output.",
@@ -80,14 +94,19 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                         continue;
                     } elseif (strpos($syntax_log[$i], "PHP Parse error:  syntax error, ") !== false) {
                         $matches = [];
-                        if (1 !== preg_match("/in (\S+) on line ([[:digit:]]+)$/", $syntax_log[$i], $matches, PREG_OFFSET_CAPTURE)) {
+                        if (1 !== preg_match(
+                            "/in (\S+) on line ([[:digit:]]+)$/",
+                            $syntax_log[$i],
+                            $matches,
+                            PREG_OFFSET_CAPTURE
+                        )) {
                             echo "Could not parse output from PHP syntax check ".$syntax_log[$i];
                             github(
                                 $payload['check_run']['url'],
                                 [
                                     'conclusion' => 'action_required',
                                     'completed_at'=>date(DATE_ATOM),
-                                    'details_url' => "https://".$_SERVER["SERVER_NAME"]."/".$payload["repository"]["name"]."/".$payload['check_run']['head_sha'].'/'.$payload['check_run']['external_id'].'/plain.txt',
+                                    'details_url' => $plain_log_url,
                                     'output' => [
                                         'title' => 'Could not parse syntax error output',
                                         'summary' => "Please send the output to the check developer.",
@@ -101,17 +120,28 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                             exit();
                         }
                         $issues += 1;
-                        $annotations[] = ['path'=>substr($matches[1][0], 2, strlen($matches[1][0])),'start_line'=>intval($matches[2][0]),'end_line'=>intval($matches[2][0]),'annotation_level'=>'failure','message'=>substr($syntax_log[$i], 32, $matches[0][1] - 33)];
+                        $annotations[] = [
+                            'path' => substr($matches[1][0], 2, strlen($matches[1][0])),
+                            'start_line' => intval($matches[2][0]),
+                            'end_line' => intval($matches[2][0]),
+                            'annotation_level' => 'failure',
+                            'message' => substr($syntax_log[$i], 32, $matches[0][1] - 33)
+                        ];
                     } elseif (strpos($syntax_log[$i], "PHP Fatal error: ") !== false) {
                         $matches = [];
-                        if (1 !== preg_match("/in (\S+) on line ([[:digit:]]+)$/", $syntax_log[$i], $matches, PREG_OFFSET_CAPTURE)) {
+                        if (1 !== preg_match(
+                            "/in (\S+) on line ([[:digit:]]+)$/",
+                            $syntax_log[$i],
+                            $matches,
+                            PREG_OFFSET_CAPTURE
+                        )) {
                             echo "Could not parse output from PHP syntax check ".$syntax_log[$i];
                             github(
                                 $payload['check_run']['url'],
                                 [
                                     'conclusion' => 'action_required',
                                     'completed_at'=>date(DATE_ATOM),
-                                    'details_url' => "https://".$_SERVER["SERVER_NAME"]."/".$payload["repository"]["name"]."/".$payload['check_run']['head_sha'].'/'.$payload['check_run']['external_id'].'/plain.txt',
+                                    'details_url' => $plain_log_url,
                                     'output' => [
                                         'title' => 'Could not parse fatal error output',
                                         'summary' => "Please send the output to the check developer.",
@@ -125,7 +155,13 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                             exit();
                         }
                         $issues += 1;
-                        $annotations[] = ['path'=>substr($matches[1][0], 2, strlen($matches[1][0])),'start_line'=>intval($matches[2][0]),'end_line'=>intval($matches[2][0]),'annotation_level'=>'failure','message'=>substr($syntax_log[$i], 18, $matches[0][1] - 19)];
+                        $annotations[] = [
+                            'path' => substr($matches[1][0], 2, strlen($matches[1][0])),
+                            'start_line' => intval($matches[2][0]),
+                            'end_line' => intval($matches[2][0]),
+                            'annotation_level' => 'failure',
+                            'message' => substr($syntax_log[$i], 18, $matches[0][1] - 19)
+                        ];
                     } elseif (strlen($syntax_log[$i]) === 0) {
                         continue;
                     } else {
@@ -135,7 +171,7 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                             [
                                 'conclusion' => 'action_required',
                                 'completed_at'=>date(DATE_ATOM),
-                                'details_url' => "https://".$_SERVER["SERVER_NAME"]."/".$payload["repository"]["name"]."/".$payload['check_run']['head_sha'].'/'.$payload['check_run']['external_id'].'/plain.txt',
+                                'details_url' => $plain_log_url,
                                 'output' => [
                                     'title' => 'Encountered unexpected output from syntax check',
                                     'summary' => "Please send the output to the check developer.",
@@ -155,7 +191,7 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                         [
                             'conclusion'=>'success',
                             'completed_at'=>date(DATE_ATOM),
-                            'details_url' => "https://".$_SERVER["SERVER_NAME"]."/".$payload["repository"]["name"]."/".$payload['check_run']['head_sha'].'/syntax/plain.txt',
+                            'details_url' => $plain_log_url,
                             'output' => [
                                 'title' => 'All files successfully parsed',
                                 'summary' => "All PHP files in the repository were successfully parsed.",
@@ -175,10 +211,12 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                             [
                                 'conclusion'=>'failure',
                                 'completed_at'=>date(DATE_ATOM),
-                                'details_url' => "https://".$_SERVER["SERVER_NAME"]."/".$payload["repository"]["name"]."/".$payload['check_run']['head_sha'].'/syntax/plain.txt',
+                                'details_url' => $plain_log_url,
                                 'output' => [
-                                    'title' => 'Found '.$issues.' issue'.( $issues === 1 ? '' : 's').' in '.$files_with_issues.' file'.( $files_with_issues === 1 ? '' : 's' ),
-                                    'summary' => "PHP was unable to parse the below file".( $files_with_issues === 1 ? '' : 's' ).".",
+                                    'title' => 'Found '.$issues.' issue'.( $issues === 1 ? '' : 's').' in ' \
+                                        .$files_with_issues.' file'.( $files_with_issues === 1 ? '' : 's' ),
+                                    'summary' => "PHP was unable to parse the below file" \
+                                        .( $files_with_issues === 1 ? '.' : 's.' ),
                                     'annotations' => $chunks[$i]
                                 ]
                             ],
@@ -191,7 +229,11 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                 }
                 break;
             case 'codesniffer':
-                passthru('/bin/bash -x -e -o pipefail '.__DIR__.'/../'.$payload['check_run']['external_id'].'.sh '.$payload["repository"]["name"].' '.$log_location.'/output.json > '.$log_location.'/plain.txt 2>&1', $return_value);
+                exec(
+                    '/bin/bash -x -e -o pipefail '.__DIR__.'/../codesniffer.sh '.$payload["repository"]["name"].' ' \
+                        .$log_location.'/output.json > '.$log_file.' 2>&1',
+                    $return_value
+                );
                 if ($return_value !== 0) {
                     echo "codesniffer check_run failed with return value ".$return_value;
                     github(
@@ -199,7 +241,7 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                         [
                             'conclusion' => 'action_required',
                             'completed_at'=>date(DATE_ATOM),
-                            'details_url' => "https://".$_SERVER["SERVER_NAME"]."/".$payload["repository"]["name"]."/".$payload['check_run']['head_sha'].'/'.$payload['check_run']['external_id'].'/plain.txt',
+                            'details_url' => $plain_log_url,
                             'output' => [
                                 'title' => 'CodeSniffer exited with an unexpected return code '.$return_value,
                                 'summary' => "Please review the output.",
@@ -244,7 +286,7 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                         [
                             'conclusion'=>'success',
                             'completed_at'=>date(DATE_ATOM),
-                            'details_url' => "https://".$_SERVER["SERVER_NAME"]."/".$payload["repository"]["name"]."/".$payload['check_run']['head_sha'].'/codesniffer/plain.txt',
+                            'details_url' => $plain_log_url,
                             'output' => [
                                 'title' => 'All files meet code style requirements',
                                 'summary' => "All PHP files in the repository comply with the PSR-2 style guide.",
@@ -264,13 +306,23 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                             [
                                 'conclusion'=>'failure',
                                 'completed_at'=>date(DATE_ATOM),
-                                'details_url' => "https://".$_SERVER["SERVER_NAME"]."/".$payload["repository"]["name"]."/".$payload['check_run']['head_sha'].'/codesniffer/plain.txt',
+                                'details_url' => $plain_log_url,
                                 'output' => [
-                                    'title' => 'Found '.$issues.' issue'.( $issues === 1 ? '' : 's').' in '.$files_with_issues.' file'.( $files_with_issues === 1 ? '' : 's' ),
-                                    'summary' => "The below file".( $files_with_issues === 1 ? '' : 's' )." do".( $files_with_issues === 1 ? 'es' : '' )." not comply with the PSR-2 style standard.\n\n".$fixable." issue".( $fixable === 1 ? '' : 's' )." can be fixed automatically.",
+                                    'title' => 'Found '.$issues.' issue'.($issues === 1 ? '' : 's').' in ' \
+                                        .$files_with_issues.' file'.($files_with_issues === 1 ? '' : 's'),
+                                    'summary' => "The below file".($files_with_issues === 1 ? '' : 's')." do" \
+                                        .($files_with_issues === 1 ? 'es' : '')." not comply with the PSR-2 style " \
+                                        ."standard.\n\n".$fixable." issue".($fixable === 1 ? '' : 's')." can be fixed " \
+                                        ." automatically.",
                                     'annotations' => $chunks[$i]
                                 ],
-                                'actions' => ( $fixable > 0 ? [['label' => 'Fix Issues', 'description' => 'Automatically fix '.$fixable.' issue'.( $fixable === 1 ? '' : 's' ), 'identifier' => 'phpcbf']] : [])
+                                'actions' => ( $fixable > 0 ? [
+                                    [
+                                        'label' => 'Fix Issues',
+                                        'description' => 'Automatically fix '.$fixable.' issue'.($fixable === 1 ? '' : 's'),
+                                        'identifier' => 'phpcbf'
+                                    ]
+                                ] : [])
                             ],
                             "reporting codesniffer check failure",
                             "application/vnd.github.antiope-preview+json",
@@ -281,7 +333,11 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                 }
                 break;
             case 'messdetector':
-                passthru('/bin/bash -x -e -o pipefail '.__DIR__.'/../'.$payload['check_run']['external_id'].'.sh '.$payload["repository"]["name"].' '.$log_location.'/output.xml > '.$log_location.'/plain.txt 2>&1', $return_value);
+                exec(
+                    '/bin/bash -x -e -o pipefail '.__DIR__.'/../messdetector.sh '.$payload["repository"]["name"].' ' \
+                        .$log_location.'/output.xml > '.$log_file.' 2>&1',
+                    $return_value
+                );
                 if ($return_value !== 0) {
                     echo "messdetector check_run failed with return value ".$return_value;
                     github(
@@ -289,7 +345,7 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                         [
                             'conclusion' => 'action_required',
                             'completed_at'=>date(DATE_ATOM),
-                            'details_url' => "https://".$_SERVER["SERVER_NAME"]."/".$payload["repository"]["name"]."/".$payload['check_run']['head_sha'].'/'.$payload['check_run']['external_id'].'/plain.txt',
+                            'details_url' => $plain_log_url,
                             'output' => [
                                 'title' => 'Mess Detector exited with an unexpected return code '.$return_value,
                                 'summary' => "Please review the output.",
@@ -309,7 +365,7 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                         [
                             'conclusion' => 'action_required',
                             'completed_at'=>date(DATE_ATOM),
-                            'details_url' => "https://".$_SERVER["SERVER_NAME"]."/".$payload["repository"]["name"]."/".$payload['check_run']['head_sha'].'/messdetector/plain.txt',
+                            'details_url' => $plain_log_url,
                             'output' => [
                                 'title' => 'Mess Detector did not output valid XML',
                                 'summary' => "Please review the output.",
@@ -332,7 +388,11 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                     foreach ($file->children() as $violation) {
                         $issues++;
                         $annotations[] = [
-                            'path' => substr($file['name']->__toString(), 21 + strlen($payload["repository"]["name"]), strlen($file['name']->__toString())),
+                            'path' => substr(
+                                $file['name']->__toString(),
+                                21 + strlen($payload["repository"]["name"]),
+                                strlen($file['name']->__toString())
+                            ),
                             'start_line'=>intval($violation['beginline']->__toString()),
                             'end_line'=>intval($violation['endline']->__toString()),
                             'annotation_level'=>"failure",
@@ -346,7 +406,7 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                         [
                             'conclusion'=>'success',
                             'completed_at'=>date(DATE_ATOM),
-                            'details_url' => "https://".$_SERVER["SERVER_NAME"]."/".$payload["repository"]["name"]."/".$payload['check_run']['head_sha'].'/messdetector/plain.txt',
+                            'details_url' => $plain_log_url,
                             'output' => [
                                 'title' => 'No messes detected',
                                 'summary' => "Mess Detector did not detect any messes.",
@@ -366,10 +426,12 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                             [
                                 'conclusion'=>'failure',
                                 'completed_at'=>date(DATE_ATOM),
-                                'details_url' => "https://".$_SERVER["SERVER_NAME"]."/".$payload["repository"]["name"]."/".$payload['check_run']['head_sha'].'/messdetector/plain.txt',
+                                'details_url' => $plain_log_url,
                                 'output' => [
-                                    'title' => 'Found '.$issues.' issue'.( $issues === 1 ? '' : 's').' in '.$files_with_issues.' file'.( $files_with_issues === 1 ? '' : 's' ),
-                                    'summary' => ( $issues === 1 ? 'A mess was' : 'Messes were' )." detected in the below file".( $files_with_issues === 1 ? '' : 's' ).".",
+                                    'title' => 'Found '.$issues.' issue'.( $issues === 1 ? '' : 's').' in ' \
+                                        .$files_with_issues.' file'.( $files_with_issues === 1 ? '' : 's' ),
+                                    'summary' => ( $issues === 1 ? 'A mess was' : 'Messes were' ) \
+                                        ." detected in the below file".( $files_with_issues === 1 ? '' : 's' ).".",
                                     'annotations' => $chunks[$i]
                                 ]
                             ],
@@ -382,7 +444,11 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                 }
                 break;
             case 'phpstan':
-                passthru('/bin/bash -e -o pipefail '.__DIR__.'/../'.$payload['check_run']['external_id'].'.sh '.$payload["repository"]["name"].' > '.$log_location.'/plain.txt 2>&1', $return_value);
+                exec(
+                    '/bin/bash -e -o pipefail '.__DIR__.'/../phpstan.sh '.$payload["repository"]["name"].' > '.$log_file \
+                        .' 2>&1',
+                    $return_value
+                );
                 if ($return_value !== 0 && $return_value !== 1) {
                     echo "phpstan check_run failed with return value ".$return_value;
                     github(
@@ -390,7 +456,7 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                         [
                             'conclusion' => 'action_required',
                             'completed_at'=>date(DATE_ATOM),
-                            'details_url' => "https://".$_SERVER["SERVER_NAME"]."/".$payload["repository"]["name"]."/".$payload['check_run']['head_sha'].'/'.$payload['check_run']['external_id'].'/plain.txt',
+                            'details_url' => $plain_log_url,
                             'output' => [
                                 'title' => 'PHPStan exited with an unexpected return code '.$return_value,
                                 'summary' => "Please review the output.",
@@ -410,7 +476,7 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                         [
                             'conclusion' => 'action_required',
                             'completed_at'=>date(DATE_ATOM),
-                            'details_url' => "https://".$_SERVER["SERVER_NAME"]."/".$payload["repository"]["name"]."/".$payload['check_run']['head_sha'].'/phpstan/plain.txt',
+                            'details_url' => $plain_log_url,
                             'output' => [
                                 'title' => 'PHPStan did not output valid XML',
                                 'summary' => "Please review the output.",
@@ -449,7 +515,7 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                         [
                             'conclusion'=>'success',
                             'completed_at'=>date(DATE_ATOM),
-                            'details_url' => "https://".$_SERVER["SERVER_NAME"]."/".$payload["repository"]["name"]."/".$payload['check_run']['head_sha'].'/phpstan/plain.txt',
+                            'details_url' => $plain_log_url,
                             'output' => [
                                 'title' => 'No issues found',
                                 'summary' => "PHPStan did not find any issues.",
@@ -469,10 +535,12 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                             [
                                 'conclusion'=>'failure',
                                 'completed_at'=>date(DATE_ATOM),
-                                'details_url' => "https://".$_SERVER["SERVER_NAME"]."/".$payload["repository"]["name"]."/".$payload['check_run']['head_sha'].'/phpstan/plain.txt',
+                                'details_url' => $plain_log_url,
                                 'output' => [
-                                    'title' => 'Found '.$issues.' issue'.( $issues === 1 ? '' : 's').' in '.$files_with_issues.' file'.( $files_with_issues === 1 ? '' : 's' ),
-                                    'summary' => ( $issues === 1 ? 'An issue was' : 'Issues were' )." found in the below file".( $files_with_issues === 1 ? '' : 's' ).".",
+                                    'title' => 'Found '.$issues.' issue'.( $issues === 1 ? '' : 's').' in ' \
+                                        .$files_with_issues.' file'.( $files_with_issues === 1 ? '' : 's' ),
+                                    'summary' => ($issues === 1 ? 'An issue was' : 'Issues were') \
+                                        ." found in the below file".( $files_with_issues === 1 ? '' : 's' ).".",
                                     'annotations' => $chunks[$i]
                                 ]
                             ],
@@ -485,7 +553,11 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                 }
                 break;
             case 'phan':
-                passthru('/bin/bash -x -e -o pipefail '.__DIR__.'/../'.$payload['check_run']['external_id'].'.sh '.$payload["repository"]["name"].' '.$log_location.'/output.json > '.$log_location.'/plain.txt 2>&1', $return_value);
+                exec(
+                    '/bin/bash -x -e -o pipefail '.__DIR__.'/../phan.sh '.$payload["repository"]["name"].' '.$log_location \
+                        .'/output.json > '.$log_file.' 2>&1',
+                    $return_value
+                );
                 if ($return_value !== 0 && $return_value !== 1) {
                     echo "phan check_run failed with return value ".$return_value;
                     github(
@@ -493,7 +565,7 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                         [
                             'conclusion' => 'action_required',
                             'completed_at'=>date(DATE_ATOM),
-                            'details_url' => "https://".$_SERVER["SERVER_NAME"]."/".$payload["repository"]["name"]."/".$payload['check_run']['head_sha'].'/'.$payload['check_run']['external_id'].'/plain.txt',
+                            'details_url' => $plain_log_url,
                             'output' => [
                                 'title' => 'Phan exited with an unexpected return code '.$return_value,
                                 'summary' => "Please review the output.",
@@ -514,11 +586,19 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                 foreach ($log as $message) {
                     $issues++;
                     $annotations[] = [
-                        'path' => substr($message['location']['path'], 21 + strlen($payload["repository"]["name"]), strlen($message['location']['path'])),
-                        'start_line'=>$message['location']['lines']['begin'],
-                        'end_line'=>$message['location']['lines']['end'],
-                        'annotation_level'=>"failure",
-                        'message'=>str_replace("/var/tmp/php-checks/".$payload["repository"]["name"], "", $message['description']),
+                        'path' => substr(
+                            $message['location']['path'],
+                            21 + strlen($payload["repository"]["name"]),
+                            strlen($message['location']['path'])
+                        ),
+                        'start_line' => $message['location']['lines']['begin'],
+                        'end_line' => $message['location']['lines']['end'],
+                        'annotation_level' => "failure",
+                        'message' => str_replace(
+                            "/var/tmp/php-checks/".$payload["repository"]["name"],
+                            "",
+                            $message['description']
+                        ),
                     ];
                     if (!in_array($message['location']['path'], $files)) {
                         $files[] = $message['location']['path'];
@@ -531,7 +611,7 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                         [
                             'conclusion'=>'success',
                             'completed_at'=>date(DATE_ATOM),
-                            'details_url' => "https://".$_SERVER["SERVER_NAME"]."/".$payload["repository"]["name"]."/".$payload['check_run']['head_sha'].'/phan/plain.txt',
+                            'details_url' => $plain_log_url,
                             'output' => [
                                 'title' => 'No issues found',
                                 'summary' => "Phan did not find any issues.",
@@ -551,10 +631,12 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                             [
                                 'conclusion'=>'failure',
                                 'completed_at'=>date(DATE_ATOM),
-                                'details_url' => "https://".$_SERVER["SERVER_NAME"]."/".$payload["repository"]["name"]."/".$payload['check_run']['head_sha'].'/phan/plain.txt',
+                                'details_url' => $plain_log_url,
                                 'output' => [
-                                    'title' => 'Found '.$issues.' issue'.( $issues === 1 ? '' : 's').' in '.$files_with_issues.' file'.( $files_with_issues === 1 ? '' : 's' ),
-                                    'summary' => ( $issues === 1 ? 'An issue was' : 'Issues were' )." found in the below file".( $files_with_issues === 1 ? '' : 's' ).".",
+                                    'title' => 'Found '.$issues.' issue'.( $issues === 1 ? '' : 's').' in ' \
+                                        .$files_with_issues.' file'.( $files_with_issues === 1 ? '' : 's' ),
+                                    'summary' => ( $issues === 1 ? 'An issue was' : 'Issues were' ) \
+                                        ." found in the below file".( $files_with_issues === 1 ? '' : 's' ).".",
                                     'annotations' => $chunks[$i]
                                 ]
                             ],
@@ -575,19 +657,23 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
         }
         $token = token();
         $return_value = 0;
-        passthru('/bin/bash -x -e -o pipefail '.__DIR__.'/../checkout.sh '.$payload["repository"]["name"].' '.add_access_token($payload["repository"]["clone_url"]).' '.$payload['check_suite']['head_sha'], $return_value);
+        passthru(
+            '/bin/bash -x -e -o pipefail '.__DIR__.'/../checkout.sh '.$payload["repository"]["name"].' ' \
+                .add_access_token($payload["repository"]["clone_url"]).' '.$payload['check_suite']['head_sha'],
+            $return_value
+        );
         if ($return_value !== 0) {
             echo "Checkout failed with return value ".$return_value.", see output above.";
             exit();
         }
-
         foreach ($checks as $name => $external_id) {
             github(
                 $payload['repository']['url'].'/check-runs',
                 [
                     'name' => $name,
                     'head_sha' => $payload['check_suite']['head_sha'],
-                    'details_url' => "https://".$_SERVER["SERVER_NAME"]."/".$payload["repository"]["name"]."/".$payload['check_suite']['head_sha'].$external_id,
+                    'details_url' => "https://".$_SERVER["SERVER_NAME"]."/".$payload["repository"]["name"]."/" \
+                        .$payload['check_suite']['head_sha'].$external_id,
                     'external_id' => $external_id,
                 ],
                 'creating check run for '.$external_id,
