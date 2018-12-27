@@ -98,7 +98,6 @@ function token(): string
 
 /**
  * Checks the commit status for the current commit
- * @return string one of pending, success, failure, error
  */
 function get_commit_status(): array
 {
