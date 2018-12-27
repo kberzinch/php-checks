@@ -67,7 +67,7 @@ function github(
     ]);
     curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($data));
     $response = curl_exec($curl);
-    if ($response === false || curl_getinfo($curl, CURLINFO_HTTP_CODE) !== $expected_status) {
+    if ($response === false || $response === true || curl_getinfo($curl, CURLINFO_HTTP_CODE) !== $expected_status) {
         echo "Error ".$action."\n".$url."\n".json_encode($data)."\n".curl_getinfo($curl, CURLINFO_HTTP_CODE)." "
             .$response;
         curl_close($curl);
@@ -128,6 +128,7 @@ function which_github()
 /**
  * Gets an app JWT
  * @return string JWT for this GitHub
+ * @SuppressWarnings(PHPMD.ExitExpression)
  */
 function app_token()
 {
