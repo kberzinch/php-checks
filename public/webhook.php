@@ -40,7 +40,7 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
             $payload['check_run']['url'],
             [
                 'status' => 'in_progress',
-                'started_at'=>date(DATE_ATOM)
+                'started_at' => date(DATE_ATOM)
             ],
             "reporting check_run in progress",
             "application/vnd.github.antiope-preview+json",
@@ -69,7 +69,7 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                         $payload['check_run']['url'],
                         [
                             'conclusion' => 'action_required',
-                            'completed_at'=>date(DATE_ATOM),
+                            'completed_at' => date(DATE_ATOM),
                             'details_url' => $plain_log_url,
                             'output' => [
                                 'title' => 'Syntax check exited with an unexpected return code '.$return_value,
@@ -110,7 +110,7 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                                 $payload['check_run']['url'],
                                 [
                                     'conclusion' => 'action_required',
-                                    'completed_at'=>date(DATE_ATOM),
+                                    'completed_at' => date(DATE_ATOM),
                                     'details_url' => $plain_log_url,
                                     'output' => [
                                         'title' => 'Could not parse syntax error output',
@@ -145,7 +145,7 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                                 $payload['check_run']['url'],
                                 [
                                     'conclusion' => 'action_required',
-                                    'completed_at'=>date(DATE_ATOM),
+                                    'completed_at' => date(DATE_ATOM),
                                     'details_url' => $plain_log_url,
                                     'output' => [
                                         'title' => 'Could not parse fatal error output',
@@ -175,7 +175,7 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                             $payload['check_run']['url'],
                             [
                                 'conclusion' => 'action_required',
-                                'completed_at'=>date(DATE_ATOM),
+                                'completed_at' => date(DATE_ATOM),
                                 'details_url' => $plain_log_url,
                                 'output' => [
                                     'title' => 'Encountered unexpected output from syntax check',
@@ -196,7 +196,7 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                         $payload['check_run']['url'],
                         [
                             'conclusion'=>'success',
-                            'completed_at'=>date(DATE_ATOM),
+                            'completed_at' => date(DATE_ATOM),
                             'details_url' => $plain_log_url,
                             'output' => [
                                 'title' => 'All files successfully parsed',
@@ -215,8 +215,8 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                         github(
                             $payload['check_run']['url'],
                             [
-                                'conclusion'=>'failure',
-                                'completed_at'=>date(DATE_ATOM),
+                                'conclusion' => 'failure',
+                                'completed_at' => date(DATE_ATOM),
                                 'details_url' => $plain_log_url,
                                 'output' => [
                                     'title' => 'Found '.$issues.' issue'.( $issues === 1 ? '' : 's').' in '
@@ -246,7 +246,7 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                         $payload['check_run']['url'],
                         [
                             'conclusion' => 'action_required',
-                            'completed_at'=>date(DATE_ATOM),
+                            'completed_at' => date(DATE_ATOM),
                             'details_url' => $plain_log_url,
                             'output' => [
                                 'title' => 'CodeSniffer exited with an unexpected return code '.$return_value,
@@ -277,10 +277,10 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                         $issues++;
                         $annotations[] = [
                             'path' => substr($path, 21 + strlen($payload["repository"]["name"]), strlen($path)),
-                            'start_line'=>$message['line'],
-                            'end_line'=>$message['line'],
-                            'annotation_level'=>$phpcs_to_github[$message['type']],
-                            'message'=>$message['message'],
+                            'start_line' => $message['line'],
+                            'end_line' => $message['line'],
+                            'annotation_level' => $phpcs_to_github[$message['type']],
+                            'message' => $message['message'],
                         ];
                         if ($message['fixable'] === true) {
                             $fixable++;
@@ -294,8 +294,8 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                     github(
                         $payload['check_run']['url'],
                         [
-                            'conclusion'=>'success',
-                            'completed_at'=>date(DATE_ATOM),
+                            'conclusion' => 'success',
+                            'completed_at' => date(DATE_ATOM),
                             'details_url' => $plain_log_url,
                             'output' => [
                                 'title' => 'All files meet code style requirements',
@@ -314,8 +314,8 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                         github(
                             $payload['check_run']['url'],
                             [
-                                'conclusion'=>'failure',
-                                'completed_at'=>date(DATE_ATOM),
+                                'conclusion' => 'failure',
+                                'completed_at' => date(DATE_ATOM),
                                 'details_url' => $plain_log_url,
                                 'output' => [
                                     'title' => 'Found '.$issues.' issue'.($issues === 1 ? '' : 's').' in '
@@ -355,7 +355,7 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                         $payload['check_run']['url'],
                         [
                             'conclusion' => 'action_required',
-                            'completed_at'=>date(DATE_ATOM),
+                            'completed_at' => date(DATE_ATOM),
                             'details_url' => $plain_log_url,
                             'output' => [
                                 'title' => 'Mess Detector exited with an unexpected return code '.$return_value,
@@ -375,7 +375,7 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                         $payload['check_run']['url'],
                         [
                             'conclusion' => 'action_required',
-                            'completed_at'=>date(DATE_ATOM),
+                            'completed_at' => date(DATE_ATOM),
                             'details_url' => $plain_log_url,
                             'output' => [
                                 'title' => 'Mess Detector did not output valid XML',
@@ -404,10 +404,10 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                                 21 + strlen($payload["repository"]["name"]),
                                 strlen($file['name']->__toString())
                             ),
-                            'start_line'=>intval($violation['beginline']->__toString()),
-                            'end_line'=>intval($violation['endline']->__toString()),
-                            'annotation_level'=>"failure",
-                            'message'=>trim($violation->__toString()),
+                            'start_line' => intval($violation['beginline']->__toString()),
+                            'end_line' => intval($violation['endline']->__toString()),
+                            'annotation_level' => "failure",
+                            'message' => trim($violation->__toString()),
                         ];
                     }
                 }
@@ -415,8 +415,8 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                     github(
                         $payload['check_run']['url'],
                         [
-                            'conclusion'=>'success',
-                            'completed_at'=>date(DATE_ATOM),
+                            'conclusion' => 'success',
+                            'completed_at' => date(DATE_ATOM),
                             'details_url' => $plain_log_url,
                             'output' => [
                                 'title' => 'No messes detected',
@@ -435,8 +435,8 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                         github(
                             $payload['check_run']['url'],
                             [
-                                'conclusion'=>'failure',
-                                'completed_at'=>date(DATE_ATOM),
+                                'conclusion' => 'failure',
+                                'completed_at' => date(DATE_ATOM),
                                 'details_url' => $plain_log_url,
                                 'output' => [
                                     'title' => 'Found '.$issues.' issue'.( $issues === 1 ? '' : 's').' in '
@@ -466,7 +466,7 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                         $payload['check_run']['url'],
                         [
                             'conclusion' => 'action_required',
-                            'completed_at'=>date(DATE_ATOM),
+                            'completed_at' => date(DATE_ATOM),
                             'details_url' => $plain_log_url,
                             'output' => [
                                 'title' => 'PHPStan exited with an unexpected return code '.$return_value,
@@ -486,7 +486,7 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                         $payload['check_run']['url'],
                         [
                             'conclusion' => 'action_required',
-                            'completed_at'=>date(DATE_ATOM),
+                            'completed_at' => date(DATE_ATOM),
                             'details_url' => $plain_log_url,
                             'output' => [
                                 'title' => 'PHPStan did not output valid XML',
@@ -513,10 +513,10 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                         $issues++;
                         $annotations[] = [
                             'path' => $file['name']->__toString(),
-                            'start_line'=>intval($violation['line']->__toString()),
-                            'end_line'=>intval($violation['line']->__toString()),
-                            'annotation_level'=>$phpstan_to_github[$violation['severity']->__toString()],
-                            'message'=>trim($violation['message']->__toString()),
+                            'start_line' => intval($violation['line']->__toString()),
+                            'end_line' => intval($violation['line']->__toString()),
+                            'annotation_level' => $phpstan_to_github[$violation['severity']->__toString()],
+                            'message' => trim($violation['message']->__toString()),
                         ];
                     }
                 }
@@ -524,8 +524,8 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                     github(
                         $payload['check_run']['url'],
                         [
-                            'conclusion'=>'success',
-                            'completed_at'=>date(DATE_ATOM),
+                            'conclusion' => 'success',
+                            'completed_at' => date(DATE_ATOM),
                             'details_url' => $plain_log_url,
                             'output' => [
                                 'title' => 'No issues found',
@@ -544,8 +544,8 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                         github(
                             $payload['check_run']['url'],
                             [
-                                'conclusion'=>'failure',
-                                'completed_at'=>date(DATE_ATOM),
+                                'conclusion' => 'failure',
+                                'completed_at' => date(DATE_ATOM),
                                 'details_url' => $plain_log_url,
                                 'output' => [
                                     'title' => 'Found '.$issues.' issue'.( $issues === 1 ? '' : 's').' in '
@@ -575,7 +575,7 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                         $payload['check_run']['url'],
                         [
                             'conclusion' => 'action_required',
-                            'completed_at'=>date(DATE_ATOM),
+                            'completed_at' => date(DATE_ATOM),
                             'details_url' => $plain_log_url,
                             'output' => [
                                 'title' => 'Phan exited with an unexpected return code '.$return_value,
@@ -625,8 +625,8 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                     github(
                         $payload['check_run']['url'],
                         [
-                            'conclusion'=>'success',
-                            'completed_at'=>date(DATE_ATOM),
+                            'conclusion' => 'success',
+                            'completed_at' => date(DATE_ATOM),
                             'details_url' => $plain_log_url,
                             'output' => [
                                 'title' => 'No issues found',
@@ -645,8 +645,8 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                         github(
                             $payload['check_run']['url'],
                             [
-                                'conclusion'=>'failure',
-                                'completed_at'=>date(DATE_ATOM),
+                                'conclusion' => 'failure',
+                                'completed_at' => date(DATE_ATOM),
                                 'details_url' => $plain_log_url,
                                 'output' => [
                                     'title' => 'Found '.$issues.' issue'.( $issues === 1 ? '' : 's').' in '
