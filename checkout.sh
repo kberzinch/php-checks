@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ ! -d "/var/tmp/php-checks/$1" ]; then
-mkdir /var/tmp/php-checks
+mkdir -p /var/tmp/php-checks
 cd /var/tmp/php-checks
 git clone ${2} ${1}
 cd $1
