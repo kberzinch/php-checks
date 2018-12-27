@@ -675,7 +675,7 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
         $return_value = 0;
         passthru(
             '/bin/bash -x -e -o pipefail '.__DIR__.'/../checkout.sh '.$payload["repository"]["name"].' '
-                .add_access_token($payload["repository"]["clone_url"]).' '.$payload['check_suite']['head_sha'],
+                .add_access_token($payload["repository"]["clone_url"]).' '.$payload['check_suite']['head_sha'].' 2>&1',
             $return_value
         );
         if ($return_value !== 0) {
