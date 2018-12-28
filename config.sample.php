@@ -11,6 +11,12 @@
 $webhook_secret = 'generate me at randomkeygen.com or wherever';
 
 /**
+ * If you'd like to host this tool on a shared domain, you may set a URL prefix here. Add a trailing slash if you set
+ * one.
+ */
+$url_prefix = '';
+
+/**
  * The location of the private key for your GitHub app here.
  */
 $private_key["github.com"] = '/opt/deploy/your-github-app.pem';

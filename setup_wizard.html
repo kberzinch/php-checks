@@ -1,0 +1,70 @@
+<html>
+<head>
+    <title>PHP Checks Setup</title>
+    <style>
+        body {
+            background-color: gainsboro;
+            font-family: sans-serif;
+            color: #333;
+        }
+
+        .container
+        {
+             display: flex;
+             align-items: center;
+             justify-content: center;
+             height: 100%;
+        }
+        .content
+        {
+             width: 600px;
+             margin: 30px;
+        }
+
+        a {
+            color: #0000CC
+        }
+    </style>
+    <script type="text/javascript">
+        function process() {
+             input = document.getElementById("manifest")
+             input.value = JSON.stringify({
+               "name": "PHP Checks",
+               "url": "https://" + window.location.hostname + "/" + document.getElementById("urlprefix").value,
+               "hook_attributes": {
+                 "url": "https://" + window.location.hostname + "/" + document.getElementById("urlprefix").value + "webhook",
+               },
+               "redirect_url": "https://" + window.location.hostname + "/" + document.getElementById("urlprefix").value + "finish?github=" + document.getElementById("github").value + "&urlprefix=" & document.getElementById("urlprefix").value,
+               "public": false,
+               "default_permissions": {
+                 "checks": "write",
+                 "contents": "write"
+               },
+               "default_events": [
+                 "check_suite",
+                 "check_run"
+               ]
+             })
+             document.forms[0].action = "https://" + document.getElementById("github").value + "/settings/apps/new"
+             document.forms[0].submit()
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="content">
+            <h1>PHP Checks Setup</h1>
+            <p>This wizard will help you configure a GitHub app to interact with this application.</p>
+            <p>The GitHub app will be created in your user account. You may transfer it to an organization or another user once setup is completed.</p>
+            <form method="POST">
+                <label for="github">GitHub Instance (domain only)</label><br>
+                <input type="text" name="github" id="github" value="github.com"><br><br>
+                <label for="urlprefix">URL Prefix (with trailing / if set)</label><br>
+                <input type="text" name="github" id="urlprefix" value=""><br><br>
+                <input type="submit" onclick="process()">
+                <input type="hidden" id="manifest" name="manifest">
+            </form>
+        </div>
+    </div>
+</body>
+</html>
