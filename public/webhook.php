@@ -5,6 +5,7 @@ require_once '../config.php';
 
 global $app_id;
 global $checks;
+global $url_prefix;
 
 $payload = payload();
 
