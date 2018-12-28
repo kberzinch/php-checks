@@ -61,4 +61,4 @@ if ($success === false) {
     exit("Failed to write config.php. Is the directory writable?");
 }
 
-exit(file_get_contents("../setup_complete.html"));
+exit(str_replace(file_get_contents("../setup_complete.html"), $response['html_url'], "{url}"));
