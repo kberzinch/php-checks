@@ -6,7 +6,10 @@ if (file_exists(__DIR__."/../config.php")) {
     exit(file_get_contents(__DIR__."/../config_exists.html"));
 }
 
-$curl = curl_init("https://".($_GET['github'] === "github.com" ? "api.github.com" : $_GET['github']."/api/v3")."/app-manifests/".$_GET['code']."/conversions");
+$curl = curl_init(
+    "https://".($_GET['github'] === "github.com" ? "api.github.com" : $_GET['github']."/api/v3")."/app-manifests/"
+        .$_GET['code']."/conversions"
+);
 if ($curl === false) {
     http_response_code(500);
     exit('Could not initialize cURL');
