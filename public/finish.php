@@ -9,6 +9,7 @@ if (file_exists(__DIR__."/../config.php")) {
 if (!isset($_GET['code'])) {
     $code_somewhere = explode("?", $_GET['urlprefix']);
     $_GET['code'] = substr($code_somewhere[1], 5, strlen($code_somewhere[1]));
+    $_GET['urlprefix'] = $code_somewhere[0];
 }
 
 $curl = curl_init(
@@ -66,4 +67,4 @@ if ($output === false) {
     exit("Failed to read completion page, but app is set up successfully.");
 }
 
-exit(str_replace($output, $response['html_url'], "{url}"));
+exit(str_replace("{url}", $response['html_url'], $output, 3));
