@@ -6,6 +6,11 @@ if (file_exists(__DIR__."/../config.php")) {
     exit(file_get_contents(__DIR__."/../config_exists.html"));
 }
 
+if (!isset($_GET['code'])) {
+    $code_somewhere = explode("?", $_GET['urlprefix']);
+    $_GET['code'] = substr($code_somewhere[1], 5, strlen($code_somewhere[1]));
+}
+
 $curl = curl_init(
     "https://".($_GET['github'] === "github.com" ? "api.github.com" : $_GET['github']."/api/v3")."/app-manifests/"
         .$_GET['code']."/conversions"
@@ -40,15 +45,15 @@ if ($success === false) {
 
 $success = file_put_contents(
     __DIR__.'/../config.php',
-    '$webhook_secret = \''.$response['webhook_secret']."';\n"
+    '<?php'."\n\n".'$webhook_secret = \''.$response['webhook_secret']."';\n"
     .'$url_prefix = \''.$_GET['urlprefix']."';\n"
     .'$private_key["'.$_GET['github']."'] = '".__DIR__."/../".$_GET['github']."-private-key.pem"."';\n"
     .'$private_key["'.$_GET['github']."'] = ".$response['id'].";\n"
-    .'$checks[\'Syntax\'] = \'syntax\';\n'
-    .'$checks[\'CodeSniffer\'] = \'codesniffer\';\n'
-    .'$checks[\'Mess Detector\'] = \'messdetector\';\n'
-    .'$checks[\'PHPStan\'] = \'phpstan\';\n'
-    .'$checks[\'Phan\'] = \'phan\';\n'
+    .'$checks[\'Syntax\'] = \'syntax\';'."\n"
+    .'$checks[\'CodeSniffer\'] = \'codesniffer\';'."\n"
+    .'$checks[\'Mess Detector\'] = \'messdetector\';'."\n"
+    .'$checks[\'PHPStan\'] = \'phpstan\';'."\n"
+    .'$checks[\'Phan\'] = \'phan\';'."\n"
 );
 
 if ($success === false) {
