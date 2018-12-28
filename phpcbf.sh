@@ -1,6 +1,12 @@
 #!/bin/bash
 
-cd /var/tmp/php-checks/$1
+if [ ! -d "/var/tmp/php-checks/$1" ]; then
+mkdir -p /var/tmp/php-checks
+cd /var/tmp/php-checks
+git clone ${4} ${1}
+fi
+cd /var/tmp/php-checks/$1/
+git remote set-url origin ${4}
 
 git checkout $3
 git pull

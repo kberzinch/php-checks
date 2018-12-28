@@ -24,9 +24,11 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
             if ($payload['requested_action']['identifier'] !== 'phpcbf') {
                 exit("Requested action is ".$payload['requested_action']['identifier'].", ignoring");
             }
+            $token = token();
             passthru(
                 '/bin/bash -x -e -o pipefail '.__DIR__.'/../phpcbf.sh '.$payload["repository"]["name"].' '
-                    .$payload['check_run']['head_sha'].' '.$payload['check_run']['check_suite']['head_branch'].' > '
+                    .$payload['check_run']['head_sha'].' '.$payload['check_run']['check_suite']['head_branch'].' '
+                    .add_access_token($payload["repository"]["clone_url"]).' > '
                     .__DIR__."/".$payload["repository"]["name"]."/".$payload['check_run']['head_sha']
                     .'/codesniffer/phpcbf.txt 2>&1',
                 $return_value
