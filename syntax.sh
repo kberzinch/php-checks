@@ -1,4 +1,5 @@
 #!/bin/bash
 
-cd /var/tmp/php-checks/$1
+cd $(dirname "$0")/workspace/$1
+
 find -type f -iname "*.php" -not -path "./vendor/*" -exec php -l {} \;

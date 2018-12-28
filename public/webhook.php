@@ -280,7 +280,7 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                     foreach ($file['messages'] as $message) {
                         $issues++;
                         $annotations[] = [
-                            'path' => substr($path, 21 + strlen($payload["repository"]["name"]), strlen($path)),
+                            'path' => $path,
                             'start_line' => $message['line'],
                             'end_line' => $message['line'],
                             'annotation_level' => $phpcs_to_github[$message['type']],
@@ -403,11 +403,7 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                     foreach ($file->children() as $violation) {
                         $issues++;
                         $annotations[] = [
-                            'path' => substr(
-                                $file['name']->__toString(),
-                                21 + strlen($payload["repository"]["name"]),
-                                strlen($file['name']->__toString())
-                            ),
+                            'path' => $file['name']->__toString(),
                             'start_line' => intval($violation['beginline']->__toString()),
                             'end_line' => intval($violation['endline']->__toString()),
                             'annotation_level' => "failure",
@@ -606,11 +602,7 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                 foreach ($log as $message) {
                     $issues++;
                     $annotations[] = [
-                        'path' => substr(
-                            $message['location']['path'],
-                            21 + strlen($payload["repository"]["name"]),
-                            strlen($message['location']['path'])
-                        ),
+                        'path' => $message['location']['path'],
                         'start_line' => $message['location']['lines']['begin'],
                         'end_line' => $message['location']['lines']['end'],
                         'annotation_level' => "failure",
