@@ -48,8 +48,8 @@ $success = file_put_contents(
     __DIR__.'/../config.php',
     '<?php'."\n\n".'$webhook_secret = \''.$response['webhook_secret']."';\n"
     .'$url_prefix = \''.$_GET['urlprefix']."';\n"
-    .'$private_key["'.$_GET['github']."'] = '".__DIR__."/../".$_GET['github']."-private-key.pem"."';\n"
-    .'$private_key["'.$_GET['github']."'] = ".$response['id'].";\n"
+    .'$private_key[\''.$_GET['github']."'] = '".__DIR__."/../".$_GET['github']."-private-key.pem"."';\n"
+    .'$app_id[\''.$_GET['github']."'] = ".$response['id'].";\n"
     .'$checks[\'Syntax\'] = \'syntax\';'."\n"
     .'$checks[\'CodeSniffer\'] = \'codesniffer\';'."\n"
     .'$checks[\'Mess Detector\'] = \'messdetector\';'."\n"
