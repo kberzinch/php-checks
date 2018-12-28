@@ -50,11 +50,12 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
         $log_location = __DIR__."/".$payload["repository"]["name"]."/".$payload['check_run']['head_sha']."/"
             .$payload['check_run']['external_id'];
         $log_file = $log_location."/plain.txt";
-        $plain_log_url = "https://".$_SERVER["SERVER_NAME"]."/".$payload["repository"]["name"]."/"
+        $plain_log_url = "https://".$_SERVER["SERVER_NAME"]."/".$url_prefix.$payload["repository"]["name"]."/"
             .$payload['check_run']['head_sha'].'/'.$payload['check_run']['external_id'].'/plain.txt';
         mkdir($log_location, 0700, true);
         copy(__DIR__."/../log-index.html", $log_location."/index.html");
         copy(__DIR__."/../worker.js", $log_location."/worker.js");
+        copy(__DIR__."/../app.js", $log_location."/app.js");
         $return_value = 0;
 
         switch ($payload['check_run']['external_id']) {
