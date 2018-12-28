@@ -688,8 +688,8 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                 [
                     'name' => $name,
                     'head_sha' => $payload['check_suite']['head_sha'],
-                    'details_url' => "https://".$_SERVER["SERVER_NAME"]."/".$payload["repository"]["name"]."/"
-                        .$payload['check_suite']['head_sha'].$external_id,
+                    'details_url' => "https://".$_SERVER["SERVER_NAME"]."/".$url_prefix.$payload["repository"]["name"]."/"
+                        .$payload['check_suite']['head_sha']."/".$external_id."/",
                     'external_id' => $external_id,
                 ],
                 'creating check run for '.$external_id,
