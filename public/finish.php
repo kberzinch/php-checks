@@ -6,7 +6,7 @@ if (file_exists(__DIR__."/../config.php")) {
     exit(file_get_contents(__DIR__."/../config_exists.html"));
 }
 
-$curl = curl_init("https://".$_GET['github']."/app-manifests/".$_GET['code']."/conversions");
+$curl = curl_init("https://".($_GET['github'] === "github.com" ? "api.github.com" : $_GET['github']."/api/v3")."/app-manifests/".$_GET['code']."/conversions");
 if ($curl === false) {
     http_response_code(500);
     exit('Could not initialize cURL');
@@ -21,7 +21,7 @@ curl_setopt($curl, CURLOPT_HTTPHEADER, [
 $response = curl_exec($curl);
 $code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
-if ($code !== 200 || is_bool($response)) {
+if ($code !== 201 || is_bool($response)) {
     http_response_code(500);
     exit("Received failure response from GitHub.");
 }
