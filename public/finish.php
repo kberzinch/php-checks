@@ -2,8 +2,8 @@
 
 require __DIR__ . '/../vendor/autoload.php';
 
-if file_exists(__DIR__."/../config.php") {
-    exit(file_get_contents(__DIR__."/../config_exists.html"))
+if (file_exists(__DIR__."/../config.php")) {
+    exit(file_get_contents(__DIR__."/../config_exists.html"));
 }
 
 $curl = curl_init("https://".$_GET['github']."/app-manifests/"$_GET['code']"/conversions");
