@@ -67,4 +67,4 @@ if ($output === false) {
     exit("Failed to read completion page, but app is set up successfully.");
 }
 
-exit(str_replace("{url}", $response['html_url'], $output, 3));
+exit(str_replace("{url}", $response['html_url'], $output));
