@@ -280,7 +280,7 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                     foreach ($file['messages'] as $message) {
                         $issues++;
                         $annotations[] = [
-                            'path' => $path,
+                            'path' => substr($path, strlen(__DIR__.$payload["repository"]["name"]) + 3, strlen($path)),
                             'start_line' => $message['line'],
                             'end_line' => $message['line'],
                             'annotation_level' => $phpcs_to_github[$message['type']],
@@ -403,7 +403,7 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                     foreach ($file->children() as $violation) {
                         $issues++;
                         $annotations[] = [
-                            'path' => $file['name']->__toString(),
+                            'path' => substr($file['name']->__toString(), strlen(__DIR__.$payload["repository"]["name"]) + 3, strlen($file['name']->__toString())),
                             'start_line' => intval($violation['beginline']->__toString()),
                             'end_line' => intval($violation['endline']->__toString()),
                             'annotation_level' => "failure",
