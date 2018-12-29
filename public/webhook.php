@@ -27,10 +27,10 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
             $token = token();
             passthru(
                 '/bin/bash -x -e -o pipefail '.__DIR__.'/../phpcbf.sh '.$payload["repository"]["name"].' '
-                    .$payload['check_run']['head_sha'].' '.$payload['check_run']['check_suite']['head_branch'].' '
-                    .add_access_token($payload["repository"]["clone_url"]).' > '
-                    .__DIR__."/".$payload["repository"]["name"]."/".$payload['check_run']['head_sha']
-                    .'/codesniffer/phpcbf.txt 2>&1',
+                .$payload['check_run']['head_sha'].' '.$payload['check_run']['check_suite']['head_branch'].' '
+                .add_access_token($payload["repository"]["clone_url"]).' > '
+                .__DIR__."/".$payload["repository"]["name"]."/".$payload['check_run']['head_sha']
+                .'/codesniffer/phpcbf.txt 2>&1',
                 $return_value
             );
             exit("phpcbf completed with return value ".$return_value);
@@ -65,7 +65,7 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
             case 'syntax':
                 passthru(
                     '/bin/bash -e -o pipefail '.__DIR__.'/../syntax.sh '.$payload["repository"]["name"].' > '.$log_file
-                        .' 2>&1',
+                    .' 2>&1',
                     $return_value
                 );
                 if ($return_value !== 0) {
@@ -241,7 +241,7 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
             case 'codesniffer':
                 passthru(
                     '/bin/bash -x -e -o pipefail '.__DIR__.'/../codesniffer.sh '.$payload["repository"]["name"].' '
-                        .$log_location.'/output.json > '.$log_file.' 2>&1',
+                    .$log_location.'/output.json > '.$log_file.' 2>&1',
                     $return_value
                 );
                 if ($return_value !== 0 && $return_value !== 1) {
@@ -350,7 +350,7 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
             case 'messdetector':
                 passthru(
                     '/bin/bash -x -e -o pipefail '.__DIR__.'/../messdetector.sh '.$payload["repository"]["name"].' '
-                        .$log_location.'/output.xml > '.$log_file.' 2>&1',
+                    .$log_location.'/output.xml > '.$log_file.' 2>&1',
                     $return_value
                 );
                 if ($return_value !== 0) {
@@ -461,7 +461,7 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
             case 'phpstan':
                 passthru(
                     '/bin/bash -e -o pipefail '.__DIR__.'/../phpstan.sh '.$payload["repository"]["name"].' > '.$log_file
-                        .' 2>&1',
+                    .' 2>&1',
                     $return_value
                 );
                 if ($return_value !== 0 && $return_value !== 1) {
@@ -570,7 +570,7 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
             case 'phan':
                 passthru(
                     '/bin/bash -x -e -o pipefail '.__DIR__.'/../phan.sh '.$payload["repository"]["name"].' '
-                        .$log_location.'/output.json > '.$log_file.' 2>&1',
+                    .$log_location.'/output.json > '.$log_file.' 2>&1',
                     $return_value
                 );
                 if ($return_value !== 0 && $return_value !== 1) {
@@ -675,7 +675,7 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
         $return_value = 0;
         passthru(
             '/bin/bash -x -e -o pipefail '.__DIR__.'/../checkout.sh '.$payload["repository"]["name"].' '
-                .add_access_token($payload["repository"]["clone_url"]).' '.$payload['check_suite']['head_sha'].' 2>&1',
+            .add_access_token($payload["repository"]["clone_url"]).' '.$payload['check_suite']['head_sha'].' 2>&1',
             $return_value
         );
         if ($return_value !== 0) {
