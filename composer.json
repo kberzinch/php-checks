@@ -5,7 +5,8 @@
         "phpmd/phpmd" : "@stable",
         "phpstan/phpstan" : "@stable",
         "phpstan/phpstan-strict-rules" : "@stable",
-        "phan/phan": "@stable"
+        "phan/phan": "@stable",
+        "nunomaduro/larastan": "@stable"
     },
     "autoload": {
         "files": [
