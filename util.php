@@ -49,8 +49,7 @@ function github(
     string $accept = "application/vnd.github.machine-man-preview+json",
     string $method = "POST",
     int $expected_status = 201
-// phpcs:ignore Squiz.Functions.MultiLineFunctionDeclaration.SpaceBeforeOpenBrace
-): array {
+) {
     global $token;
     global $app_id;
     $curl = curl_init($url);
