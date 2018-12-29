@@ -244,7 +244,7 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                         .$log_location.'/output.json > '.$log_file.' 2>&1',
                     $return_value
                 );
-                if ($return_value !== 0) {
+                if ($return_value !== 0 && $return_value !== 1) {
                     echo "codesniffer check_run failed with return value ".$return_value;
                     github(
                         $payload['check_run']['url'],
