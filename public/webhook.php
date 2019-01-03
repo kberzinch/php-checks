@@ -678,9 +678,15 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
         break;
     case "check_suite":
         if ($payload['action'] === 'completed') {
-            if ($payload['check_suite']['conclusion'] === 'success') {
-                notify_slack_ok();
-                exit('Check suite completed successfully, notified Slack.');
+            if ($payload['check_suite']['status'] === 'completed') {
+                if ($payload['check_suite']['conclusion'] === 'success') {
+                    notify_slack_ok();
+                    exit('Check suite completed successfully, notified Slack.');
+                } else {
+                    exit('Check suite did not complete successfully. Add more logic here.');
+                }
+            } else {
+                exit("Check suite is not yet completed, ignoring.");
             }
         }
         if ($payload['action'] !== 'requested' && $payload['action'] !== 'rerequested') {
