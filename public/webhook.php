@@ -458,7 +458,12 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                             200
                         );
                     }
-                    notify_slack_issues('Mess Detector', $payload['check_run']['html_url'], $issues, $files_with_issues);
+                    notify_slack_issues(
+                        'Mess Detector',
+                        $payload['check_run']['html_url'],
+                        $issues,
+                        $files_with_issues
+                    );
                 }
                 break;
             case 'phpstan':

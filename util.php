@@ -185,6 +185,16 @@ function api_base(): string
     return "https://".(which_github() === "github.com" ? "api.github.com" : which_github()."/api/v3");
 }
 
+/**
+ * Fires a Slack notification when a check did not complete successfully.
+ *
+ * @param  string The name of the check
+ * @param  string The html_url to view more details about the check
+ * @param  int The number of failures
+ * @param  int The number of files with issues
+ * @return void
+ * @SuppressWarnings(PHPMD.ExitExpression)
+ */
 function notify_slack_issues(string $check, string $check_url, int $failures, int $files): void
 {
     global $slack_webhook;
@@ -210,6 +220,13 @@ function notify_slack_issues(string $check, string $check_url, int $failures, in
     curl_close($curl);
 }
 
+/**
+ * Fires a Slack notification when all checks complete succesfully.
+ *
+ *
+ * @return void
+ * @SuppressWarnings(PHPMD.ExitExpression)
+ */
 function notify_slack_ok(): void
 {
     global $slack_webhook;
