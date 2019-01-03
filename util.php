@@ -188,10 +188,10 @@ function api_base(): string
 /**
  * Fires a Slack notification when a check did not complete successfully.
  *
- * @param  string The name of the check
- * @param  string The html_url to view more details about the check
- * @param  int The number of failures
- * @param  int The number of files with issues
+ * @param  string $check The name of the check
+ * @param  string $check_url The html_url to view more details about the check
+ * @param  int $failures The number of failures
+ * @param  int $files The number of files with issues
  * @return void
  * @SuppressWarnings(PHPMD.ExitExpression)
  */
