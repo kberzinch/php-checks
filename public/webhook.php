@@ -236,6 +236,7 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                             200
                         );
                     }
+                    notify_slack_issues('Syntax', $payload['check_run']['html_url'], $issues, $files_with_issues);
                 }
                 break;
             case 'codesniffer':
@@ -345,6 +346,7 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                             200
                         );
                     }
+                    notify_slack_issues('CodeSniffer', $payload['check_run']['html_url'], $issues, $files_with_issues);
                 }
                 break;
             case 'messdetector':
@@ -456,6 +458,7 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                             200
                         );
                     }
+                    notify_slack_issues('Mess Detector', $payload['check_run']['html_url'], $issues, $files_with_issues);
                 }
                 break;
             case 'phpstan':
@@ -565,6 +568,7 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                             200
                         );
                     }
+                    notify_slack_issues('PHPStan', $payload['check_run']['html_url'], $issues, $files_with_issues);
                 }
                 break;
             case 'phan':
@@ -662,11 +666,18 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                             200
                         );
                     }
+                    notify_slack_issues('Phan', $payload['check_run']['html_url'], $issues, $files_with_issues);
                 }
                 break;
         }
         break;
     case "check_suite":
+        if ($payload['action'] === 'completed') {
+            if ($payload['check_suite']['conclusion'] === 'success') {
+                notify_slack_ok();
+                exit('Check suite completed successfully, notified Slack.');
+            }
+        }
         if ($payload['action'] !== 'requested' && $payload['action'] !== 'rerequested') {
             echo "Action is ".$payload['action'].", ignoring";
             exit();

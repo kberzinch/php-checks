@@ -32,3 +32,5 @@ $checks['CodeSniffer'] = 'codesniffer';
 $checks['Mess Detector'] = 'messdetector';
 $checks['PHPStan'] = 'phpstan';
 $checks['Phan'] = 'phan';
+
+$slack_webhook = '';

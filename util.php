@@ -184,3 +184,53 @@ function api_base(): string
 {
     return "https://".(which_github() === "github.com" ? "api.github.com" : which_github()."/api/v3");
 }
+
+function notify_slack_issues(string $check, string $check_url, int $failures, int $files): void
+{
+    global $slack_webhook;
+    $curl = curl_init($slack_webhook);
+    if ($curl === false) {
+        http_response_code(500);
+        exit('Could not initialize cURL');
+    }
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'POST');
+    curl_setopt($curl, CURLOPT_HTTPHEADER, [
+        'Content-Type: application/json',
+    ]);
+    curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode(
+        ['text' => $check.' found '.$failures.' issues in '.$files.' files. <'.$check_url.'|View details here>.']
+    ));
+    $response = curl_exec($curl);
+    if ($response === false || $response === true || curl_getinfo($curl, CURLINFO_HTTP_CODE) !== 200) {
+        curl_close($curl);
+        http_response_code(500);
+        exit('Invalid response from Slack');
+    }
+    curl_close($curl);
+}
+
+function notify_slack_ok(): void
+{
+    global $slack_webhook;
+    $curl = curl_init($slack_webhook);
+    if ($curl === false) {
+        http_response_code(500);
+        exit('Could not initialize cURL');
+    }
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'POST');
+    curl_setopt($curl, CURLOPT_HTTPHEADER, [
+        'Content-Type: application/json',
+    ]);
+    curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode(
+        ['text' => 'Check suite completed successfully.']
+    ));
+    $response = curl_exec($curl);
+    if ($response === false || $response === true || curl_getinfo($curl, CURLINFO_HTTP_CODE) !== 200) {
+        curl_close($curl);
+        http_response_code(500);
+        exit('Invalid response from Slack');
+    }
+    curl_close($curl);
+}
