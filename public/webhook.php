@@ -568,6 +568,8 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                 }
                 break;
             case 'phan':
+                echo "Phan tends to take a very long time, so we're closing the connection before it finishes.";
+                fastcgi_finish_request();
                 passthru(
                     '/bin/bash -x -e -o pipefail '.__DIR__.'/../phan.sh '.$payload["repository"]["name"].' '
                     .$log_location.'/output.json > '.$log_file.' 2>&1',
