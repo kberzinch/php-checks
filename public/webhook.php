@@ -236,7 +236,6 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                             200
                         );
                     }
-                    notify_slack_issues('Syntax', $payload['check_run']['html_url'], $issues, $files_with_issues);
                 }
                 break;
             case 'codesniffer':
@@ -346,7 +345,6 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                             200
                         );
                     }
-                    notify_slack_issues('CodeSniffer', $payload['check_run']['html_url'], $issues, $files_with_issues);
                 }
                 break;
             case 'messdetector':
@@ -458,12 +456,6 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                             200
                         );
                     }
-                    notify_slack_issues(
-                        'Mess Detector',
-                        $payload['check_run']['html_url'],
-                        $issues,
-                        $files_with_issues
-                    );
                 }
                 break;
             case 'phpstan':
@@ -573,7 +565,6 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                             200
                         );
                     }
-                    notify_slack_issues('PHPStan', $payload['check_run']['html_url'], $issues, $files_with_issues);
                 }
                 break;
             case 'phan':
@@ -671,7 +662,6 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                             200
                         );
                     }
-                    notify_slack_issues('Phan', $payload['check_run']['html_url'], $issues, $files_with_issues);
                 }
                 break;
         }
@@ -679,12 +669,40 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
     case "check_suite":
         if ($payload['action'] === 'completed') {
             if ($payload['check_suite']['status'] === 'completed') {
-                if ($payload['check_suite']['conclusion'] === 'success') {
-                    notify_slack_ok();
-                    exit('Check suite completed successfully, notified Slack.');
-                } else {
-                    exit('Check suite did not complete successfully. Add more logic here.');
+                $token = token();
+                $check_runs = github(
+                    $payload['check_suite']['check_runs_url'],
+                    [],
+                    "fetching check run information",
+                    "application/vnd.github.antiope-preview+json",
+                    "GET",
+                    200
+                );
+                $slack_message = [
+                    'text' => 'Checks completed for `'.substr($payload['check_suite']['head_sha'], 0, 7).'` by <'
+                        .$payload['sender']['html_url'].'|'.$payload['sender']['login'].'> on <'
+                        .$payload['repository']['html_url'].'/tree/'.$payload['check_suite']['head_branch'].'|'
+                        .$payload['repository']['name'].':'.$payload['check_suite']['head_branch'].'>',
+                    'attachments' => [],
+                ];
+
+                $github_to_slack_colors = [
+                    'failure' => 'danger',
+                    'action_required' => 'danger',
+                    'success' => 'good',
+                ]
+
+                foreach ($check_runs['check_runs'] as $check_run) {
+                    $slack_message['attachments'][] = [
+                        'color' => $github_to_slack_colors[$check_run['conclusion']],
+                        'title' => $check_run['name'],
+                        'title_link' => $check_run['html_url'],
+                        'text' => $check_run['output']['title'],
+                        'fallback' => $check_run['name'].': '.$check_run['output']['title'],
+                    ]
                 }
+
+                notify_slack($slack_message);
             } else {
                 exit("Check suite is not yet completed, ignoring.");
             }

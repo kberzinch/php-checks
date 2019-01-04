@@ -186,48 +186,13 @@ function api_base(): string
 }
 
 /**
- * Fires a Slack notification when a check did not complete successfully.
- *
- * @param  string $check The name of the check
- * @param  string $check_url The html_url to view more details about the check
- * @param  int $failures The number of failures
- * @param  int $files The number of files with issues
- * @return void
- * @SuppressWarnings(PHPMD.ExitExpression)
- */
-function notify_slack_issues(string $check, string $check_url, int $failures, int $files): void
-{
-    global $slack_webhook;
-    $curl = curl_init($slack_webhook);
-    if ($curl === false) {
-        http_response_code(500);
-        exit('Could not initialize cURL');
-    }
-    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'POST');
-    curl_setopt($curl, CURLOPT_HTTPHEADER, [
-        'Content-Type: application/json',
-    ]);
-    curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode(
-        ['text' => $check.' found '.$failures.' issues in '.$files.' files. <'.$check_url.'|View details here>.']
-    ));
-    $response = curl_exec($curl);
-    if ($response === false || $response === true || curl_getinfo($curl, CURLINFO_HTTP_CODE) !== 200) {
-        curl_close($curl);
-        http_response_code(500);
-        exit('Invalid response from Slack');
-    }
-    curl_close($curl);
-}
-
-/**
  * Fires a Slack notification when all checks complete succesfully.
  *
- *
+ * @param array $data the message
  * @return void
  * @SuppressWarnings(PHPMD.ExitExpression)
  */
-function notify_slack_ok(): void
+function notify_slack(array $data): void
 {
     global $slack_webhook;
     $curl = curl_init($slack_webhook);
@@ -240,9 +205,7 @@ function notify_slack_ok(): void
     curl_setopt($curl, CURLOPT_HTTPHEADER, [
         'Content-Type: application/json',
     ]);
-    curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode(
-        ['text' => 'Check suite completed successfully.']
-    ));
+    curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($data));
     $response = curl_exec($curl);
     if ($response === false || $response === true || curl_getinfo($curl, CURLINFO_HTTP_CODE) !== 200) {
         curl_close($curl);
