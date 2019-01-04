@@ -690,7 +690,7 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                     'failure' => 'danger',
                     'action_required' => 'danger',
                     'success' => 'good',
-                ]
+                ];
 
                 foreach ($check_runs['check_runs'] as $check_run) {
                     $slack_message['attachments'][] = [
