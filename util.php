@@ -229,7 +229,7 @@ function check_run_finish(): void
 
         foreach ($check_runs['check_runs'] as $check_run) {
             $slack_message['attachments'][] = [
-                'color' => $github_to_slack_colors[$check_run['conclusion']],
+                'color' => $gh_to_slack_colors[$check_run['conclusion']],
                 'title' => $check_run['name'],
                 'title_link' => $check_run['html_url'],
                 'text' => $check_run['output']['title'],
