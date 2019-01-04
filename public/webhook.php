@@ -679,8 +679,9 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                     200
                 );
                 $slack_message = [
-                    'text' => 'Checks completed for `'.substr($payload['check_suite']['head_sha'], 0, 7).'` by <'
-                        .$payload['sender']['html_url'].'|'.$payload['sender']['login'].'> on <'
+                    'text' => 'Checks completed for <'.$payload['repository']['html_url'].'/commit/'
+                        .$payload['check_suite']['head_sha'].'|`'.substr($payload['check_suite']['head_sha'], 0, 7)
+                        .'`> by <'.$payload['sender']['html_url'].'|'.$payload['sender']['login'].'> on <'
                         .$payload['repository']['html_url'].'/tree/'.$payload['check_suite']['head_branch'].'|'
                         .$payload['repository']['name'].':'.$payload['check_suite']['head_branch'].'>',
                     'attachments' => [],
