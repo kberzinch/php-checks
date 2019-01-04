@@ -699,7 +699,7 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                         'title_link' => $check_run['html_url'],
                         'text' => $check_run['output']['title'],
                         'fallback' => $check_run['name'].': '.$check_run['output']['title'],
-                    ]
+                    ];
                 }
 
                 notify_slack($slack_message);
