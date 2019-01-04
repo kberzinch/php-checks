@@ -667,49 +667,9 @@ switch ($_SERVER["HTTP_X_GITHUB_EVENT"]) {
                 }
                 break;
         }
+        check_run_finish();
         break;
     case "check_suite":
-        if ($payload['action'] === 'completed') {
-            if ($payload['check_suite']['status'] === 'completed') {
-                $token = token();
-                $check_runs = github(
-                    $payload['check_suite']['check_runs_url'],
-                    [],
-                    "fetching check run information",
-                    "application/vnd.github.antiope-preview+json",
-                    "GET",
-                    200
-                );
-                $slack_message = [
-                    'text' => 'Checks completed for <'.$payload['repository']['html_url'].'/commit/'
-                        .$payload['check_suite']['head_sha'].'|`'.substr($payload['check_suite']['head_sha'], 0, 7)
-                        .'`> by <'.$payload['sender']['html_url'].'|'.$payload['sender']['login'].'> on <'
-                        .$payload['repository']['html_url'].'/tree/'.$payload['check_suite']['head_branch'].'|'
-                        .$payload['repository']['name'].':'.$payload['check_suite']['head_branch'].'>',
-                    'attachments' => [],
-                ];
-
-                $github_to_slack_colors = [
-                    'failure' => 'danger',
-                    'action_required' => 'danger',
-                    'success' => 'good',
-                ];
-
-                foreach ($check_runs['check_runs'] as $check_run) {
-                    $slack_message['attachments'][] = [
-                        'color' => $github_to_slack_colors[$check_run['conclusion']],
-                        'title' => $check_run['name'],
-                        'title_link' => $check_run['html_url'],
-                        'text' => $check_run['output']['title'],
-                        'fallback' => $check_run['name'].': '.$check_run['output']['title'],
-                    ];
-                }
-
-                notify_slack($slack_message);
-            } else {
-                exit("Check suite is not yet completed, ignoring.");
-            }
-        }
         if ($payload['action'] !== 'requested' && $payload['action'] !== 'rerequested') {
             echo "Action is ".$payload['action'].", ignoring";
             exit();

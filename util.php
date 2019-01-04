@@ -186,6 +186,63 @@ function api_base(): string
 }
 
 /**
+ * Helper to call once a check run finishes to notify Slack if this is the last one
+ * @return void
+ */
+function check_run_finish(): void
+{
+    global $payload;
+    global $token;
+
+    $check_suite = github(
+        $payload['check_run']['check_suite']['url'],
+        [],
+        'fetching check suite information',
+        "application/vnd.github.antiope-preview+json",
+        "GET",
+        200
+    );
+
+    if ($check_suite['status'] === 'completed') {
+        $check_runs = github(
+            $payload['check_run']['check_suite']['url'].'/check-runs',
+            [],
+            "fetching check run information",
+            "application/vnd.github.antiope-preview+json",
+            "GET",
+            200
+        );
+        $slack_message = [
+            'text' => 'Checks completed for <'.$payload['repository']['html_url'].'/commit/'
+                .$payload['check_run']['check_suite']['head_sha'].'|`'
+                .substr($payload['check_run']['check_suite']['head_sha'], 0, 7)
+                .'`> by <'.$payload['sender']['html_url'].'|'.$payload['sender']['login'].'> on <'
+                .$payload['repository']['html_url'].'/tree/'.$payload['check_run']['check_suite']['head_branch'].'|'
+                .$payload['repository']['name'].':'.$payload['check_run']['check_suite']['head_branch'].'>',
+            'attachments' => [],
+        ];
+
+        $github_to_slack_colors = [
+            'failure' => 'danger',
+            'action_required' => 'danger',
+            'success' => 'good',
+        ];
+
+        foreach ($check_runs['check_runs'] as $check_run) {
+            $slack_message['attachments'][] = [
+                'color' => $github_to_slack_colors[$check_run['conclusion']],
+                'title' => $check_run['name'],
+                'title_link' => $check_run['html_url'],
+                'text' => $check_run['output']['title'],
+                'fallback' => $check_run['name'].': '.$check_run['output']['title'],
+            ];
+        }
+
+        notify_slack($slack_message);
+    }
+}
+
+/**
  * Fires a Slack notification when all checks complete succesfully.
  *
  * @param array $data the message
