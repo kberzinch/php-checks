@@ -192,7 +192,6 @@ function api_base(): string
 function check_run_finish(): void
 {
     global $payload;
-    global $token;
 
     $check_suite = github(
         $payload['check_run']['check_suite']['url'],
@@ -222,7 +221,7 @@ function check_run_finish(): void
             'attachments' => [],
         ];
 
-        $github_to_slack_colors = [
+        $gh_to_slack_colors = [
             'failure' => 'danger',
             'action_required' => 'danger',
             'success' => 'good',
