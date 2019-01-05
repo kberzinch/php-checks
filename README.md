@@ -1,4 +1,4 @@
-# deploy
+# php-checks
 [![GitHub license](https://img.shields.io/github/license/kberzinch/php-checks.svg?style=flat-square)](https://raw.githubusercontent.com/kberzinch/php-checks/master/LICENSE.md)
 
 This is a suite of integrations for the GitHub Checks API for PHP development. It supports pulling repositories on GitHub.com as well as GitHub Enterprise instances from the same installation.
