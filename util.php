@@ -1,9 +1,11 @@
 <?php declare(strict_types = 1);
 
+// phpcs:disable Generic.NamingConventions.CamelCapsFunctionName.NotCamelCaps
+
 /**
  * Verifies and parses the payload
  *
- * @return                                 array the GitHub webhook payload
+ * @return                                 array<string> the GitHub webhook payload
  * @SuppressWarnings(PHPMD.ExitExpression)
  */
 function payload(): array
@@ -28,6 +30,7 @@ function payload(): array
  * Injects an authentication token for the given URL if one is available in the config file
  *
  * @param  string $url The URL to tokenize
+ *
  * @return string      The URL, possibly with an authentication token inserted
  */
 function add_access_token(string $url): string
@@ -42,8 +45,11 @@ function add_access_token(string $url): string
  * Sends $data to $url
  *
  * @param                                  string $url  The GitHub API URL to hit
- * @param                                  array  $data The data to send
+ * @param                                  array<string>  $data The data to send
+ *
  * @SuppressWarnings(PHPMD.ExitExpression)
+ *
+ * @return  array<string> The response from GitHub
  */
 function github(
     string $url,

@@ -93,16 +93,17 @@ switch ($_SERVER['HTTP_X_GITHUB_EVENT']) {
                     exit('Could not read syntax log.');
                 }
                 $syntax_log = explode("\n", $syntax_log);
+                $syntax_log_count = count($syntax_log);
                 $files_with_issues = 0;
                 $issues = 0;
                 $annotations = [];
-                for ($i = 0; $i < count($syntax_log); $i++) {
+                for ($i = 0; $i < $syntax_log_count; $i++) {
                     if (false !== strpos($syntax_log[$i], 'No syntax errors detected in ')) {
                         continue;
                     }
 
                     if (false !== strpos($syntax_log[$i], 'Errors parsing ')) {
-                        $files_with_issues += 1;
+                        $files_with_issues++;
                         continue;
                     }
 
@@ -134,7 +135,7 @@ switch ($_SERVER['HTTP_X_GITHUB_EVENT']) {
                             http_response_code(500);
                             exit('Could not parse output from PHP syntax check ' . $syntax_log[$i]);
                         }
-                        $issues += 1;
+                        $issues++;
                         $annotations[] = [
                             'path' => substr($matches[1][0], 2, strlen($matches[1][0])),
                             'start_line' => intval($matches[2][0]),
@@ -170,7 +171,7 @@ switch ($_SERVER['HTTP_X_GITHUB_EVENT']) {
                             http_response_code(500);
                             exit('Could not parse output from PHP syntax check ' . $syntax_log[$i]);
                         }
-                        $issues += 1;
+                        $issues++;
                         $annotations[] = [
                             'path' => substr($matches[1][0], 2, strlen($matches[1][0])),
                             'start_line' => intval($matches[2][0]),
@@ -246,8 +247,8 @@ switch ($_SERVER['HTTP_X_GITHUB_EVENT']) {
                 break;
             case 'codesniffer':
                 passthru(
-                    '/bin/bash -x -e -o pipefail ' . __DIR__ . '/../codesniffer.sh ' . $payload['repository']['name'] . ' '
-                    . $log_location . '/output.json > ' . $log_file . ' 2>&1',
+                    '/bin/bash -x -e -o pipefail ' . __DIR__ . '/../codesniffer.sh ' . $payload['repository']['name']
+                    . ' ' . $log_location . '/output.json > ' . $log_file . ' 2>&1',
                     $return_value
                 );
                 if (0 !== $return_value && 1 !== $return_value) {
@@ -286,7 +287,11 @@ switch ($_SERVER['HTTP_X_GITHUB_EVENT']) {
                     foreach ($file['messages'] as $message) {
                         $issues++;
                         $annotations[] = [
-                            'path' => substr($path, strlen(__DIR__ . $payload['repository']['name']) + 5, strlen($path)),
+                            'path' => substr(
+                                $path,
+                                strlen(__DIR__ . $payload['repository']['name']) + 5,
+                                strlen($path)
+                            ),
                             'start_line' => $message['line'],
                             'end_line' => $message['line'],
                             'annotation_level' => $phpcs_to_github[$message['type']],
@@ -336,8 +341,8 @@ switch ($_SERVER['HTTP_X_GITHUB_EVENT']) {
                                         . $files_with_issues . ' file' . (1 === $files_with_issues ? '' : 's'),
                                     'summary' => 'The below file' . (1 === $files_with_issues ? '' : 's') . ' do'
                                         . (1 === $files_with_issues ? 'es' : '') . ' not comply with the PSR-2 style '
-                                        . "standard.\n\n" . $fixable . ' issue' . (1 === $fixable ? '' : 's') . ' can be fixed '
-                                        . ' automatically.',
+                                        . "standard.\n\n" . $fixable . ' issue' . (1 === $fixable ? '' : 's')
+                                        . ' can be fixed ' . ' automatically.',
                                     'annotations' => $chunks[$i],
                                 ],
                                 'actions' => ( $fixable > 0 ? [
@@ -359,8 +364,8 @@ switch ($_SERVER['HTTP_X_GITHUB_EVENT']) {
                 break;
             case 'messdetector':
                 passthru(
-                    '/bin/bash -x -e -o pipefail ' . __DIR__ . '/../messdetector.sh ' . $payload['repository']['name'] . ' '
-                    . $log_location . '/output.xml > ' . $log_file . ' 2>&1',
+                    '/bin/bash -x -e -o pipefail ' . __DIR__ . '/../messdetector.sh ' . $payload['repository']['name']
+                    . ' ' . $log_location . '/output.xml > ' . $log_file . ' 2>&1',
                     $return_value
                 );
                 if (0 !== $return_value) {
@@ -470,8 +475,8 @@ switch ($_SERVER['HTTP_X_GITHUB_EVENT']) {
                 break;
             case 'phpstan':
                 passthru(
-                    '/bin/bash -e -o pipefail ' . __DIR__ . '/../phpstan.sh ' . $payload['repository']['name'] . ' > ' . $log_file
-                    . ' 2>&1',
+                    '/bin/bash -e -o pipefail ' . __DIR__ . '/../phpstan.sh ' . $payload['repository']['name'] . ' > '
+                    . $log_file . ' 2>&1',
                     $return_value
                 );
                 if (0 !== $return_value && 1 !== $return_value) {
@@ -690,7 +695,8 @@ switch ($_SERVER['HTTP_X_GITHUB_EVENT']) {
         $return_value = 0;
         passthru(
             '/bin/bash -x -e -o pipefail ' . __DIR__ . '/../checkout.sh ' . $payload['repository']['name'] . ' '
-            . add_access_token($payload['repository']['clone_url']) . ' ' . $payload['check_suite']['head_sha'] . ' 2>&1',
+            . add_access_token($payload['repository']['clone_url']) . ' ' . $payload['check_suite']['head_sha']
+            . ' 2>&1',
             $return_value
         );
         if (0 !== $return_value) {
@@ -703,8 +709,9 @@ switch ($_SERVER['HTTP_X_GITHUB_EVENT']) {
                 [
                     'name' => $name,
                     'head_sha' => $payload['check_suite']['head_sha'],
-                    'details_url' => 'https://' . $_SERVER['SERVER_NAME'] . '/' . $url_prefix . $payload['repository']['name']
-                        . '/' . $payload['check_suite']['head_sha'] . '/' . $external_id . '/',
+                    'details_url' => 'https://' . $_SERVER['SERVER_NAME'] . '/' . $url_prefix
+                        . $payload['repository']['name'] . '/' . $payload['check_suite']['head_sha'] . '/'
+                        . $external_id . '/',
                     'external_id' => $external_id,
                 ],
                 'creating check run for ' . $external_id,
