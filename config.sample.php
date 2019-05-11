@@ -19,11 +19,13 @@ $url_prefix = '';
 /**
  * The location of the private key for your GitHub app here.
  */
+$private_key = [];
 $private_key['github.com'] = '/opt/deploy/your-github-app.pem';
 
 /**
  * The ID of your GitHub app
  */
+$app_id = [];
 $app_id['github.com'] = 15018;
 
 $checks = [];

@@ -1,6 +1,6 @@
 <?php declare(strict_types = 1);
 
-// phpcs:disable Generic.NamingConventions.CamelCapsFunctionName.NotCamelCaps,SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingTraversableReturnTypeHintSpecification
+// phpcs:disable Generic.NamingConventions.CamelCapsFunctionName.NotCamelCaps,SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingTraversableReturnTypeHintSpecification,SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingTraversableParameterTypeHintSpecification
 
 /**
  * Verifies and parses the payload
@@ -28,7 +28,7 @@ function payload(): array
 /**
  * Injects an authentication token for the given URL if one is available in the config file
  *
- * @param  string $url The URL to tokenize
+ * @param string $url The URL to tokenize
  *
  * @return string      The URL, possibly with an authentication token inserted
  */
@@ -43,8 +43,8 @@ function add_access_token(string $url): string
 /**
  * Sends $data to $url
  *
- * @param                                  string $url  The GitHub API URL to hit
- * @param                                  array<string>  $data The data to send
+ * @param string $url  The GitHub API URL to hit
+ * @param array  $data The data to send
  *
  * @SuppressWarnings(PHPMD.ExitExpression)
  */
@@ -257,8 +257,9 @@ function check_run_finish(): void
 /**
  * Fires a Slack notification when all checks complete successfully.
  *
- * @param                                  array $data the message
- * @return                                 void
+ * @param array $data the message
+ * @return void
+ *
  * @SuppressWarnings(PHPMD.ExitExpression)
  */
 function notify_slack(array $data): void
