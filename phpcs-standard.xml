@@ -68,8 +68,8 @@
     <rule ref="Generic.Strings"/>
 
     <rule ref="Generic.WhiteSpace.DisallowTabIndent"/>
-    <rule ref="Generic.WhiteSpace.LanguageConstructSpacing"/>
     <rule ref="Generic.WhiteSpace.IncrementDecrementSpacing"/>
+    <rule ref="Generic.WhiteSpace.LanguageConstructSpacing"/>
     <rule ref="Generic.WhiteSpace.ScopeIndent"/>
 
     <rule ref="Generic.VersionControl.GitMergeConflict"/>
@@ -88,9 +88,10 @@
     <rule ref="SlevomatCodingStandard.Commenting.EmptyComment"/>
 
     <rule ref="SlevomatCodingStandard.ControlStructures">
-        <exclude name="SlevomatCodingStandard.ControlStructures.NewWithParentheses"/>
+        <exclude name="SlevomatCodingStandard.ControlStructures.ControlStructureSpacing"/>
         <exclude name="SlevomatCodingStandard.ControlStructures.DisallowShortTernaryOperator"/>
         <exclude name="SlevomatCodingStandard.ControlStructures.DisallowYodaComparison"/>
+        <exclude name="SlevomatCodingStandard.ControlStructures.NewWithoutParentheses"/>
     </rule>
 
     <rule ref="SlevomatCodingStandard.Exceptions"/>
@@ -99,15 +100,25 @@
         <exclude name="SlevomatCodingStandard.Functions.TrailingCommaInCall"/>
     </rule>
 
-    <rule ref="SlevomatCodingStandard.Namespaces">
-        <exclude name="SlevomatCodingStandard.Namespaces.FullyQualifiedGlobalFunctions"/>
-        <exclude name="SlevomatCodingStandard.Namespaces.UseOnlyWhitelistedNamespaces"/>
-    </rule>
-    <rule ref="SlevomatCodingStandard.Namespaces.FullyQualifiedGlobalFunctions">
+    <rule ref="SlevomatCodingStandard.Namespaces.DisallowGroupUse"/>
+    <rule ref="SlevomatCodingStandard.Namespaces.MultipleUsesPerLine"/>
+    <rule ref="SlevomatCodingStandard.Namespaces.NamespaceDeclaration"/>
+    <rule ref="SlevomatCodingStandard.Namespaces.NamespaceSpacing">
         <properties>
-            <property name="exclude" type="array">
-                <element value="env"/>
-            </property>
+            <property name="linesCountAfterNamespace" value="1"/>
+            <property name="linesCountBeforeNamespace" value="1"/>
+        </properties>
+    </rule>
+    <rule ref="SlevomatCodingStandard.Namespaces.RequireOneNamespaceInFile"/>
+    <rule ref="SlevomatCodingStandard.Namespaces.UnusedUses"/>
+    <rule ref="SlevomatCodingStandard.Namespaces.UseDoesNotStartWithBackslash"/>
+    <rule ref="SlevomatCodingStandard.Namespaces.UseFromSameNamespace"/>
+    <rule ref="SlevomatCodingStandard.Namespaces.UselessAlias"/>
+    <rule ref="SlevomatCodingStandard.Namespaces.UseSpacing">
+        <properties>
+            <property name="linesCountAfterLastUse" value="1"/>
+            <property name="linesCountBeforeFirstUse" value="1"/>
+            <property name="linesCountBetweenUseTypes" value="0"/>
         </properties>
     </rule>
 
@@ -130,7 +141,6 @@
     <rule ref="Squiz.ControlStructures.ForEachLoopDeclaration"/>
     <rule ref="Squiz.ControlStructures.ForLoopDeclaration"/>
     <rule ref="Squiz.ControlStructures.LowercaseDeclaration"/>
-    <rule ref="Squiz.ControlStructures.SwitchDeclaration"/>
 
     <rule ref="Squiz.Functions.FunctionDuplicateArgument"/>
     <rule ref="Squiz.Functions.LowercaseFunctionKeywords"/>

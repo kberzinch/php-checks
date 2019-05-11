@@ -1,23 +1,24 @@
-<?php
+<?php declare(strict_types = 1);
 
 /**
  * Verifies and parses the payload
- * @return array the GitHub webhook payload
+ *
+ * @return                                 array the GitHub webhook payload
  * @SuppressWarnings(PHPMD.ExitExpression)
  */
 function payload(): array
 {
     global $webhook_secret;
-    list($algo, $hash) = explode('=', $_SERVER["HTTP_X_HUB_SIGNATURE"], 2);
+    [$algo, $hash] = explode('=', $_SERVER['HTTP_X_HUB_SIGNATURE'], 2);
     $payload = file_get_contents('php://input');
-    if ($payload === false) {
+    if (false === $payload) {
         http_response_code(500);
-        die("Could not read php://input");
+        die('Could not read php://input');
     }
     $payloadHash = hash_hmac($algo, $payload, $webhook_secret);
     if ($hash !== $payloadHash) {
         http_response_code(401);
-        die("Signature verification failed");
+        die('Signature verification failed');
     }
 
     return json_decode($payload, true);
@@ -25,35 +26,37 @@ function payload(): array
 
 /**
  * Injects an authentication token for the given URL if one is available in the config file
+ *
  * @param  string $url The URL to tokenize
  * @return string      The URL, possibly with an authentication token inserted
  */
 function add_access_token(string $url): string
 {
     global $token;
-    $clone_url = explode("/", $url);
-    $clone_url[2] = "x-access-token:".$token."@".$clone_url[2];
-    return implode("/", $clone_url);
+    $clone_url = explode('/', $url);
+    $clone_url[2] = 'x-access-token:' . $token . '@' . $clone_url[2];
+    return implode('/', $clone_url);
 }
 
 /**
  * Sends $data to $url
- * @param  string $url  The GitHub API URL to hit
- * @param  array  $data The data to send
+ *
+ * @param                                  string $url  The GitHub API URL to hit
+ * @param                                  array  $data The data to send
  * @SuppressWarnings(PHPMD.ExitExpression)
  */
 function github(
     string $url,
     array $data,
-    string $action = "",
-    string $accept = "application/vnd.github.machine-man-preview+json",
-    string $method = "POST",
+    string $action = '',
+    string $accept = 'application/vnd.github.machine-man-preview+json',
+    string $method = 'POST',
     int $expected_status = 201
 ): array {
     global $token;
     global $app_id;
     $curl = curl_init($url);
-    if ($curl === false) {
+    if (false === $curl) {
         http_response_code(500);
         exit('Could not initialize cURL');
     }
@@ -61,15 +64,15 @@ function github(
     curl_setopt($curl, CURLOPT_CUSTOMREQUEST, $method);
     curl_setopt($curl, CURLOPT_HTTPHEADER, [
         'Content-Type: application/json',
-        "Accept: ".$accept,
-        "User-Agent: GitHub App ID ".$app_id[which_github()],
-        "Authorization: Bearer ".$token
+        'Accept: ' . $accept,
+        'User-Agent: GitHub App ID ' . $app_id[which_github()],
+        'Authorization: Bearer ' . $token,
     ]);
     curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($data));
     $response = curl_exec($curl);
-    if ($response === false || $response === true || curl_getinfo($curl, CURLINFO_HTTP_CODE) !== $expected_status) {
-        echo "Error ".$action."\n".$url."\n".json_encode($data)."\n".curl_getinfo($curl, CURLINFO_HTTP_CODE)." "
-            .$response;
+    if (false === $response || true === $response || curl_getinfo($curl, CURLINFO_HTTP_CODE) !== $expected_status) {
+        echo 'Error ' . $action . "\n" . $url . "\n" . json_encode($data) . "\n" . curl_getinfo($curl, CURLINFO_HTTP_CODE) . ' '
+            . $response;
         curl_close($curl);
         exit;
     }
@@ -79,6 +82,7 @@ function github(
 
 /**
  * Fetches an installation token for other components to use
+ *
  * @return string a GitHub App access token for interacting with the repository
  */
 function token(): string
@@ -88,12 +92,12 @@ function token(): string
     $token = app_token();
 
     $access_token = github(
-        api_base()."/installations/".installation_id()."/access_tokens",
+        api_base() . '/installations/' . installation_id() . '/access_tokens',
         [],
-        "getting access token"
+        'getting access token'
     );
 
-    return $access_token["token"];
+    return $access_token['token'];
 }
 
 /**
@@ -104,11 +108,11 @@ function get_commit_status(): array
     global $payload;
 
     return github(
-        $payload["commit"]["url"]."/status",
+        $payload['commit']['url'] . '/status',
         [],
-        "getting commit status",
-        "application/vnd.github.machine-man-preview+json",
-        "GET",
+        'getting commit status',
+        'application/vnd.github.machine-man-preview+json',
+        'GET',
         200
     );
 }
@@ -116,17 +120,19 @@ function get_commit_status(): array
 /**
  * Provides the primary GitHub domain for this event. Used for looking up app
  * registration information.
+ *
  * @return string primary GitHub domain
  */
 function which_github(): string
 {
     global $payload;
-    return explode("/", $payload["repository"]["clone_url"])[2];
+    return explode('/', $payload['repository']['clone_url'])[2];
 }
 
 /**
  * Gets an app JWT
- * @return string JWT for this GitHub
+ *
+ * @return                                 string JWT for this GitHub
  * @SuppressWarnings(PHPMD.ExitExpression)
  */
 function app_token(): string
@@ -135,9 +141,9 @@ function app_token(): string
     global $app_id;
 
     $key = file_get_contents($private_key[which_github()]);
-    if ($key === false) {
+    if (false === $key) {
         http_response_code(500);
-        exit('Could not read private key for '.which_github());
+        exit('Could not read private key for ' . which_github());
     }
 
     $key = new SimpleJWT\Keys\RSAKey($key, 'pem');
@@ -159,34 +165,36 @@ function installation_id(): int
     global $payload;
     global $token;
 
-    if (isset($payload["installation"]["id"])) {
-        return $payload["installation"]["id"];
+    if (isset($payload['installation']['id'])) {
+        return $payload['installation']['id'];
     }
     if (!isset($token)) {
         $token = app_token();
     }
     $installation = github(
-        api_base()."/repos/".$payload["repository"]["full_name"]."/installation",
+        api_base() . '/repos/' . $payload['repository']['full_name'] . '/installation',
         [],
-        "getting installation information",
-        "application/vnd.github.machine-man-preview+json",
-        "GET",
+        'getting installation information',
+        'application/vnd.github.machine-man-preview+json',
+        'GET',
         200
     );
-    return $installation["id"];
+    return $installation['id'];
 }
 
 /**
  * Returns base API URL for this event
+ *
  * @return string the GitHub API base URL
  */
 function api_base(): string
 {
-    return "https://".(which_github() === "github.com" ? "api.github.com" : which_github()."/api/v3");
+    return 'https://' . ('github.com' === which_github() ? 'api.github.com' : which_github() . '/api/v3');
 }
 
 /**
  * Helper to call once a check run finishes to notify Slack if this is the last one
+ *
  * @return void
  */
 function check_run_finish(): void
@@ -197,62 +205,64 @@ function check_run_finish(): void
         $payload['check_run']['check_suite']['url'],
         [],
         'fetching check suite information',
-        "application/vnd.github.antiope-preview+json",
-        "GET",
+        'application/vnd.github.antiope-preview+json',
+        'GET',
         200
     );
 
-    if ($check_suite['status'] === 'completed') {
-        $check_runs = github(
-            $payload['check_run']['check_suite']['url'].'/check-runs',
-            [],
-            "fetching check run information",
-            "application/vnd.github.antiope-preview+json",
-            "GET",
-            200
-        );
-        $slack_message = [
-            'text' => 'Checks completed for <'.$payload['repository']['html_url'].'/commit/'
-                .$payload['check_run']['check_suite']['head_sha'].'|`'
-                .substr($payload['check_run']['check_suite']['head_sha'], 0, 7)
-                .'`> by <'.$payload['sender']['html_url'].'|'.$payload['sender']['login'].'> on <'
-                .$payload['repository']['html_url'].'/tree/'.$payload['check_run']['check_suite']['head_branch'].'|'
-                .$payload['repository']['name'].':'.$payload['check_run']['check_suite']['head_branch'].'>',
-            'attachments' => [],
-        ];
-
-        $gh_to_slack_colors = [
-            'failure' => 'danger',
-            'action_required' => 'danger',
-            'success' => 'good',
-        ];
-
-        foreach ($check_runs['check_runs'] as $check_run) {
-            $slack_message['attachments'][] = [
-                'color' => $gh_to_slack_colors[$check_run['conclusion']],
-                'title' => $check_run['name'],
-                'title_link' => $check_run['html_url'],
-                'text' => $check_run['output']['title'],
-                'fallback' => $check_run['name'].': '.$check_run['output']['title'],
-            ];
-        }
-
-        notify_slack($slack_message);
+    if ('completed' !== $check_suite['status']) {
+        return;
     }
+
+    $check_runs = github(
+        $payload['check_run']['check_suite']['url'] . '/check-runs',
+        [],
+        'fetching check run information',
+        'application/vnd.github.antiope-preview+json',
+        'GET',
+        200
+    );
+    $slack_message = [
+        'text' => 'Checks completed for <' . $payload['repository']['html_url'] . '/commit/'
+            . $payload['check_run']['check_suite']['head_sha'] . '|`'
+            . substr($payload['check_run']['check_suite']['head_sha'], 0, 7)
+            . '`> by <' . $payload['sender']['html_url'] . '|' . $payload['sender']['login'] . '> on <'
+            . $payload['repository']['html_url'] . '/tree/' . $payload['check_run']['check_suite']['head_branch'] . '|'
+            . $payload['repository']['name'] . ':' . $payload['check_run']['check_suite']['head_branch'] . '>',
+        'attachments' => [],
+    ];
+
+    $gh_to_slack_colors = [
+        'failure' => 'danger',
+        'action_required' => 'danger',
+        'success' => 'good',
+    ];
+
+    foreach ($check_runs['check_runs'] as $check_run) {
+        $slack_message['attachments'][] = [
+            'color' => $gh_to_slack_colors[$check_run['conclusion']],
+            'title' => $check_run['name'],
+            'title_link' => $check_run['html_url'],
+            'text' => $check_run['output']['title'],
+            'fallback' => $check_run['name'] . ': ' . $check_run['output']['title'],
+        ];
+    }
+
+    notify_slack($slack_message);
 }
 
 /**
  * Fires a Slack notification when all checks complete successfully.
  *
- * @param array $data the message
- * @return void
+ * @param                                  array $data the message
+ * @return                                 void
  * @SuppressWarnings(PHPMD.ExitExpression)
  */
 function notify_slack(array $data): void
 {
     global $slack_webhook;
     $curl = curl_init($slack_webhook);
-    if ($curl === false) {
+    if (false === $curl) {
         http_response_code(500);
         exit('Could not initialize cURL');
     }
@@ -263,7 +273,7 @@ function notify_slack(array $data): void
     ]);
     curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($data));
     $response = curl_exec($curl);
-    if ($response === false || $response === true || curl_getinfo($curl, CURLINFO_HTTP_CODE) !== 200) {
+    if (false === $response || true === $response || 200 !== curl_getinfo($curl, CURLINFO_HTTP_CODE)) {
         curl_close($curl);
         http_response_code(500);
         exit('Invalid response from Slack');
