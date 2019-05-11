@@ -17,7 +17,11 @@ then
     exit;
 fi
 
-! $(dirname "$0")/vendor/bin/phpcbf --ignore=vendor --standard=psr2 .
+if [ -f "phpcs.xml" ]; then
+    ! $(dirname "$0")/vendor/bin/phpcbf
+else
+    ! $(dirname "$0")/vendor/bin/phpcbf --standard=$(dirname "$0")/phpcs-standard.xml .
+fi
 
 git add .
 GIT_COMMITTER_NAME='PHP Checks' GIT_COMMITTER_EMAIL='php-checks@kberzin.ch' git commit --author="PHP Checks <php-checks@kberzin.ch>" -m "Fix style issues"
