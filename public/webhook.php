@@ -318,7 +318,8 @@ switch ($_SERVER['HTTP_X_GITHUB_EVENT']) {
                             'details_url' => $plain_log_url,
                             'output' => [
                                 'title' => 'All files meet code style requirements',
-                                'summary' => 'All PHP files in the repository comply with the PSR-2 style guide.',
+                                'summary' => 'All PHP files in the repository comply with the configured style '
+                                    .'standard.',
                             ],
                         ],
                         'reporting codesniffer check success',
@@ -340,8 +341,8 @@ switch ($_SERVER['HTTP_X_GITHUB_EVENT']) {
                                     'title' => 'Found ' . $issues . ' issue' . (1 === $issues ? '' : 's') . ' in '
                                         . $files_with_issues . ' file' . (1 === $files_with_issues ? '' : 's'),
                                     'summary' => 'The below file' . (1 === $files_with_issues ? '' : 's') . ' do'
-                                        . (1 === $files_with_issues ? 'es' : '') . ' not comply with the PSR-2 style '
-                                        . "standard.\n\n" . $fixable . ' issue' . (1 === $fixable ? '' : 's')
+                                        . (1 === $files_with_issues ? 'es' : '') . ' not comply with the configured '
+                                        . "style standard.\n\n" . $fixable . ' issue' . (1 === $fixable ? '' : 's')
                                         . ' can be fixed automatically.',
                                     'annotations' => $chunks[$i],
                                 ],
