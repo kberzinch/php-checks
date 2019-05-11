@@ -64,8 +64,8 @@ switch ($_SERVER['HTTP_X_GITHUB_EVENT']) {
         switch ($payload['check_run']['external_id']) {
             case 'syntax':
                 passthru(
-                    '/bin/bash -e -o pipefail ' . __DIR__ . '/../syntax.sh ' . $payload['repository']['name'] . ' > ' . $log_file
-                    . ' 2>&1',
+                    '/bin/bash -e -o pipefail ' . __DIR__ . '/../syntax.sh ' . $payload['repository']['name'] . ' > '
+                    . $log_file . ' 2>&1',
                     $return_value
                 );
                 if (0 !== $return_value) {
