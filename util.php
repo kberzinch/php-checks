@@ -1,11 +1,10 @@
 <?php declare(strict_types = 1);
 
-// phpcs:disable Generic.NamingConventions.CamelCapsFunctionName.NotCamelCaps
+// phpcs:disable Generic.NamingConventions.CamelCapsFunctionName.NotCamelCaps,SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingTraversableReturnTypeHintSpecification
 
 /**
  * Verifies and parses the payload
  *
- * @return                                 array<string> the GitHub webhook payload
  * @SuppressWarnings(PHPMD.ExitExpression)
  */
 function payload(): array
@@ -48,8 +47,6 @@ function add_access_token(string $url): string
  * @param                                  array<string>  $data The data to send
  *
  * @SuppressWarnings(PHPMD.ExitExpression)
- *
- * @return  array<string> The response from GitHub
  */
 function github(
     string $url,
@@ -77,8 +74,8 @@ function github(
     curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($data));
     $response = curl_exec($curl);
     if (false === $response || true === $response || curl_getinfo($curl, CURLINFO_HTTP_CODE) !== $expected_status) {
-        echo 'Error ' . $action . "\n" . $url . "\n" . json_encode($data) . "\n" . curl_getinfo($curl, CURLINFO_HTTP_CODE) . ' '
-            . $response;
+        echo 'Error ' . $action . "\n" . $url . "\n" . json_encode($data) . "\n"
+            . curl_getinfo($curl, CURLINFO_HTTP_CODE) . ' ' . $response;
         curl_close($curl);
         exit;
     }

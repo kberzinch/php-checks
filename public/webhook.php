@@ -342,7 +342,7 @@ switch ($_SERVER['HTTP_X_GITHUB_EVENT']) {
                                     'summary' => 'The below file' . (1 === $files_with_issues ? '' : 's') . ' do'
                                         . (1 === $files_with_issues ? 'es' : '') . ' not comply with the PSR-2 style '
                                         . "standard.\n\n" . $fixable . ' issue' . (1 === $fixable ? '' : 's')
-                                        . ' can be fixed ' . ' automatically.',
+                                        . ' can be fixed automatically.',
                                     'annotations' => $chunks[$i],
                                 ],
                                 'actions' => ( $fixable > 0 ? [
