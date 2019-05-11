@@ -95,7 +95,9 @@
 
     <rule ref="SlevomatCodingStandard.Exceptions"/>
 
-    <rule ref="SlevomatCodingStandard.Functions"/>
+    <rule ref="SlevomatCodingStandard.Functions">
+        <exclude name="SlevomatCodingStandard.Functions.TrailingCommaInCall"/>
+    </rule>
 
     <rule ref="SlevomatCodingStandard.Namespaces">
         <exclude name="SlevomatCodingStandard.Namespaces.FullyQualifiedGlobalFunctions"/>
