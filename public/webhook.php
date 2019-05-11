@@ -318,8 +318,10 @@ switch ($_SERVER['HTTP_X_GITHUB_EVENT']) {
                             'details_url' => $plain_log_url,
                             'output' => [
                                 'title' => 'All files meet code style requirements',
+                                // phpcs:disable Generic.Strings.UnnecessaryStringConcat.Found
                                 'summary' => 'All PHP files in the repository comply with the configured style '
-                                    .'standard.',
+                                    . 'standard.',
+                                // phpcs:enable
                             ],
                         ],
                         'reporting codesniffer check success',
