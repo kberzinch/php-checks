@@ -258,6 +258,7 @@ function check_run_finish(): void
  * Fires a Slack notification when all checks complete successfully.
  *
  * @param array $data the message
+ *
  * @return void
  *
  * @SuppressWarnings(PHPMD.ExitExpression)
