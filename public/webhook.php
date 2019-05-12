@@ -532,6 +532,78 @@ switch ($_SERVER['HTTP_X_GITHUB_EVENT']) {
                 foreach ($xml->children() as $file) {
                     $files_with_issues++;
                     foreach ($file->children() as $violation) {
+                        if (null === $file['name']) {
+                            // this is an unmatched ignore
+                            // find in the neon file
+
+                            $matches = [];
+                            if (1 !== preg_match(
+                                '/Ignored error pattern (.+) was not matched in reported errors\./',
+                                trim($violation['message']->__toString()),
+                                $matches
+                            )
+                            ) {
+                                github(
+                                    $payload['check_run']['url'],
+                                    [
+                                        'conclusion' => 'action_required',
+                                        'completed_at' => date(DATE_ATOM),
+                                        'details_url' => $plain_log_url,
+                                        'output' => [
+                                            'title' => 'Could not parse PHPStan output',
+                                            'summary' => 'Please send the output to the check developer.',
+                                        ],
+                                    ],
+                                    'reporting check_run failure',
+                                    'application/vnd.github.antiope-preview+json',
+                                    'PATCH',
+                                    200
+                                );
+                                http_response_code(500);
+                                exit('Could not parse output from PHPStan ' . trim($violation['message']->__toString()));
+                            }
+
+                            // https://stackoverflow.com/a/19760657
+                            $search      = $matches[1];
+                            $lines       = file($log_location . '/plain.txt');
+                            $line_number = false;
+
+                            while (list($key, $line) = each($lines) and !$line_number) {
+                               $line_number = (strpos($line, $search) !== FALSE) ? $key + 1 : $line_number;
+                            }
+
+                            if (false === $line_number) {
+                                github(
+                                    $payload['check_run']['url'],
+                                    [
+                                        'conclusion' => 'action_required',
+                                        'completed_at' => date(DATE_ATOM),
+                                        'details_url' => $plain_log_url,
+                                        'output' => [
+                                            'title' => 'Could not parse PHPStan output',
+                                            'summary' => 'Please send the output to the check developer.',
+                                        ],
+                                    ],
+                                    'reporting check_run failure',
+                                    'application/vnd.github.antiope-preview+json',
+                                    'PATCH',
+                                    200
+                                );
+                                http_response_code(500);
+                                exit('Could not parse output from PHPStan ' . trim($violation['message']->__toString()));
+                            }
+
+                            $issues++;
+                            $annotations[] = [
+                                'path' => 'phpstan.neon',
+                                'start_line' => $line_number,
+                                'end_line' => $line_number,
+                                'annotation_level' => $phpstan_to_github[$violation['severity']->__toString()],
+                                'message' => trim($violation['message']->__toString()),
+                            ];
+                            continue;
+                        }
+
                         $issues++;
                         $annotations[] = [
                             'path' => $file['name']->__toString(),
