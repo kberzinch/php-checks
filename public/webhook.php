@@ -566,7 +566,9 @@ switch ($_SERVER['HTTP_X_GITHUB_EVENT']) {
                             }
 
                             $search = $matches[1];
-                            $lines = file(__DIR__.'/../workspace/'.$payload['repository']['name'].'/phpstan.neon');
+                            $lines = file(
+                                __DIR__ . '/../workspace/' . $payload['repository']['name'] . '/phpstan.neon'
+                            );
 
                             $found = false;
                             $line_counter = 0;
