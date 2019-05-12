@@ -568,8 +568,8 @@ switch ($_SERVER['HTTP_X_GITHUB_EVENT']) {
                             $lines       = file($log_location . '/plain.txt');
                             $line_number = false;
 
-                            while (list($key, $line) = each($lines) and !$line_number) {
-                               $line_number = (strpos($line, $search) !== FALSE) ? $key + 1 : $line_number;
+                            while ([$key, $line] = each($lines) and !$line_number) {
+                                $line_number = false !== strpos($line, $search) ? $key + 1 : $line_number;
                             }
 
                             if (false === $line_number) {
