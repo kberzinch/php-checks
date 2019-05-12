@@ -571,6 +571,29 @@ switch ($_SERVER['HTTP_X_GITHUB_EVENT']) {
                             $found = false;
                             $line_counter = 0;
 
+                            if (false === $lines) {
+                                github(
+                                    $payload['check_run']['url'],
+                                    [
+                                        'conclusion' => 'action_required',
+                                        'completed_at' => date(DATE_ATOM),
+                                        'details_url' => $plain_log_url,
+                                        'output' => [
+                                            'title' => 'Could not parse PHPStan output',
+                                            'summary' => 'Please send the output to the check developer.',
+                                        ],
+                                    ],
+                                    'reporting check_run failure',
+                                    'application/vnd.github.antiope-preview+json',
+                                    'PATCH',
+                                    200
+                                );
+                                http_response_code(500);
+                                exit(
+                                    'Could not parse output from PHPStan ' . trim($violation['message']->__toString())
+                                );
+                            }
+
                             foreach ($lines as $line) {
                                 $line_counter++;
                                 if (false !== strpos($line, $search)) {
