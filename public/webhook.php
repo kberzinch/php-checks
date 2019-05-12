@@ -560,19 +560,26 @@ switch ($_SERVER['HTTP_X_GITHUB_EVENT']) {
                                     200
                                 );
                                 http_response_code(500);
-                                exit('Could not parse output from PHPStan ' . trim($violation['message']->__toString()));
+                                exit(
+                                    'Could not parse output from PHPStan ' . trim($violation['message']->__toString())
+                                );
                             }
 
-                            // https://stackoverflow.com/a/19760657
-                            $search      = $matches[1];
-                            $lines       = file($log_location . '/plain.txt');
-                            $line_number = false;
+                            $search = $matches[1];
+                            $lines = file($log_location . '/plain.txt');
 
-                            while ([$key, $line] = each($lines) and !$line_number) {
-                                $line_number = false !== strpos($line, $search) ? $key + 1 : $line_number;
+                            $found = false;
+                            $line_counter = 0;
+
+                            foreach ($lines as $line) {
+                                $line_counter++;
+                                if (false !== strpos($line, $search)) {
+                                    $found = true;
+                                    break;
+                                }
                             }
 
-                            if (false === $line_number) {
+                            if (false === $found) {
                                 github(
                                     $payload['check_run']['url'],
                                     [
@@ -590,14 +597,16 @@ switch ($_SERVER['HTTP_X_GITHUB_EVENT']) {
                                     200
                                 );
                                 http_response_code(500);
-                                exit('Could not parse output from PHPStan ' . trim($violation['message']->__toString()));
+                                exit(
+                                    'Could not parse output from PHPStan ' . trim($violation['message']->__toString())
+                                );
                             }
 
                             $issues++;
                             $annotations[] = [
                                 'path' => 'phpstan.neon',
-                                'start_line' => $line_number,
-                                'end_line' => $line_number,
+                                'start_line' => $line_counter,
+                                'end_line' => $line_counter,
                                 'annotation_level' => $phpstan_to_github[$violation['severity']->__toString()],
                                 'message' => trim($violation['message']->__toString()),
                             ];
