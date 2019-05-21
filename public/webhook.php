@@ -800,15 +800,56 @@ switch ($_SERVER['HTTP_X_GITHUB_EVENT']) {
             echo 'Action is ' . $payload['action'] . ', ignoring';
             exit;
         }
+
+        $log_location = __DIR__ . '/' . $payload['repository']['name'] . '/' . $payload['check_suite']['head_sha']
+            . '/composer';
+        $log_file = $log_location . '/plain.txt';
+        $plain_log_url = 'https://' . $_SERVER['SERVER_NAME'] . '/' . $url_prefix . $payload['repository']['name'] . '/'
+            . $payload['check_suite']['head_sha'] . '/composer/plain.txt';
+        mkdir($log_location, 0700, true);
+        copy(__DIR__ . '/../log-index.html', $log_location . '/index.html');
+        copy(__DIR__ . '/../worker.js', $log_location . '/worker.js');
+        copy(__DIR__ . '/../app.js', $log_location . '/app.js');
+
+        github(
+            $payload['repository']['url'] . '/check-runs',
+            [
+                'name' => 'Composer Install',
+                'head_sha' => $payload['check_suite']['head_sha'],
+                'details_url' => 'https://' . $_SERVER['SERVER_NAME'] . '/' . $url_prefix
+                    . $payload['repository']['name'] . '/' . $payload['check_suite']['head_sha'] . '/composer/',
+                'external_id' => 'composer',
+            ],
+            'creating check run for composer',
+            'application/vnd.github.antiope-preview+json'
+        );
+
         $token = token();
         $return_value = 0;
         passthru(
             '/bin/bash -x -e -o pipefail ' . __DIR__ . '/../checkout.sh ' . $payload['repository']['name'] . ' '
             . add_access_token($payload['repository']['clone_url']) . ' ' . $payload['check_suite']['head_sha']
-            . ' 2>&1',
+            . ' >> ' . $log_file . ' 2>&1',
             $return_value
         );
         if (0 !== $return_value) {
+            github(
+                $payload['repository']['url'] . '/check-runs',
+                [
+                    'conclusion' => 'failure',
+                    'completed_at' => date(DATE_ATOM),
+                    'details_url' => $plain_log_url,
+                    'output' => [
+                        'title' => 'Composer failed to install dependencies',
+                        'summary' => 'Please review the output.',
+                    ],
+                ],
+                'reporting composer install failure',
+                'application/vnd.github.antiope-preview+json',
+                'PATCH',
+                200
+            );
+
             echo 'Checkout failed with return value ' . $return_value . ', see output above.';
             exit;
         }
