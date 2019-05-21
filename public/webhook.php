@@ -62,8 +62,8 @@ switch ($_SERVER['HTTP_X_GITHUB_EVENT']) {
         $return_value = 0;
 
         file_put_contents(
-            $log_location."/title",
-            $payload["check_run"]["name"]." | ".$payload["repository"]["full_name"],
+            $log_location . '/title',
+            $payload['check_run']['name'] . ' | ' . $payload['repository']['full_name'],
             FILE_APPEND
         );
 
