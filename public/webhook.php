@@ -819,7 +819,7 @@ switch ($_SERVER['HTTP_X_GITHUB_EVENT']) {
 
         $token = token();
 
-        github(
+        $response = github(
             $payload['repository']['url'] . '/check-runs',
             [
                 'name' => 'Composer Install',
@@ -860,6 +860,24 @@ switch ($_SERVER['HTTP_X_GITHUB_EVENT']) {
             echo 'Checkout failed with return value ' . $return_value . ', see output above.';
             exit;
         }
+
+        github(
+            $response['url'],
+            [
+                'conclusion' => 'success',
+                'completed_at' => date(DATE_ATOM),
+                'details_url' => $plain_log_url,
+                'output' => [
+                    'title' => 'Composer successfully installed dependencies',
+                    'summary' => 'All required dependencies were successfully installed.',
+                ],
+            ],
+            'reporting composer check success',
+            'application/vnd.github.antiope-preview+json',
+            'PATCH',
+            200
+        );
+
         foreach ($checks as $name => $external_id) {
             github(
                 $payload['repository']['url'] . '/check-runs',
