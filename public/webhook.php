@@ -61,6 +61,12 @@ switch ($_SERVER['HTTP_X_GITHUB_EVENT']) {
         copy(__DIR__ . '/../app.js', $log_location . '/app.js');
         $return_value = 0;
 
+        file_put_contents(
+            $log_location."/title",
+            $payload["check_run"]["name"]." | ".$payload["repository"]["full_name"],
+            FILE_APPEND
+        );
+
         switch ($payload['check_run']['external_id']) {
             case 'syntax':
                 passthru(
