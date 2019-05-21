@@ -817,6 +817,8 @@ switch ($_SERVER['HTTP_X_GITHUB_EVENT']) {
         copy(__DIR__ . '/../worker.js', $log_location . '/worker.js');
         copy(__DIR__ . '/../app.js', $log_location . '/app.js');
 
+        $token = token();
+
         github(
             $payload['repository']['url'] . '/check-runs',
             [
@@ -830,7 +832,6 @@ switch ($_SERVER['HTTP_X_GITHUB_EVENT']) {
             'application/vnd.github.antiope-preview+json'
         );
 
-        $token = token();
         $return_value = 0;
         passthru(
             '/bin/bash -x -e -o pipefail ' . __DIR__ . '/../checkout.sh ' . $payload['repository']['name'] . ' '
