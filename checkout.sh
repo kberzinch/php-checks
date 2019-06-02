@@ -9,7 +9,7 @@ git clone ${2} ${1}
 set -x
 cd $1
 git checkout ${3}
-composer install
+composer install --no-interaction --no-progress --no-suggest
 exit
 fi
 cd $(dirname "$0")/workspace/$1/
@@ -19,4 +19,4 @@ git remote set-url origin ${2}
 set -x
 git fetch
 git checkout ${3}
-composer install
+composer install --no-interaction --no-progress --no-suggest
