@@ -2,4 +2,4 @@
 
 cd "${0%/*}"
 
-composer install
+composer install --no-interaction --no-progress --no-suggest
