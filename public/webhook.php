@@ -841,7 +841,7 @@ switch ($_SERVER['HTTP_X_GITHUB_EVENT']) {
         );
         if (0 !== $return_value) {
             github(
-                $payload['repository']['url'] . '/check-runs',
+                $response['url'],
                 [
                     'conclusion' => 'failure',
                     'completed_at' => date(DATE_ATOM),
