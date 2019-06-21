@@ -185,6 +185,42 @@ switch ($_SERVER['HTTP_X_GITHUB_EVENT']) {
                             'annotation_level' => 'failure',
                             'message' => substr($syntax_log[$i], 18, $matches[0][1] - 19),
                         ];
+                    } elseif (false !== strpos($syntax_log[$i], 'PHP Warning: ')) {
+                        $matches = [];
+                        if (1 !== preg_match(
+                            '/in (\S+) on line ([[:digit:]]+)$/',
+                            $syntax_log[$i],
+                            $matches,
+                            PREG_OFFSET_CAPTURE
+                        )
+                        ) {
+                            github(
+                                $payload['check_run']['url'],
+                                [
+                                    'conclusion' => 'action_required',
+                                    'completed_at' => date(DATE_ATOM),
+                                    'details_url' => $plain_log_url,
+                                    'output' => [
+                                        'title' => 'Could not parse fatal error output',
+                                        'summary' => 'Please send the output to the check developer.',
+                                    ],
+                                ],
+                                'reporting check_run failure',
+                                'application/vnd.github.antiope-preview+json',
+                                'PATCH',
+                                200
+                            );
+                            http_response_code(500);
+                            exit('Could not parse output from PHP syntax check ' . $syntax_log[$i]);
+                        }
+                        $issues++;
+                        $annotations[] = [
+                            'path' => substr($matches[1][0], 2, strlen($matches[1][0])),
+                            'start_line' => intval($matches[2][0]),
+                            'end_line' => intval($matches[2][0]),
+                            'annotation_level' => 'warning',
+                            'message' => substr($syntax_log[$i], 18, $matches[0][1] - 19),
+                        ];
                     } elseif (0 === strlen($syntax_log[$i])) {
                         continue;
                     } else {
