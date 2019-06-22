@@ -834,6 +834,53 @@ switch ($_SERVER['HTTP_X_GITHUB_EVENT']) {
                     }
                 }
                 break;
+            case 'composer':
+                $return_value = 0;
+                passthru(
+                    '/bin/bash -x -e -o pipefail ' . __DIR__ . '/../checkout.sh ' . $payload['repository']['name'] . ' '
+                    . add_access_token($payload['repository']['clone_url']) . ' ' . $payload['check_suite']['head_sha']
+                    . ' >> ' . $log_file . ' 2>&1',
+                    $return_value
+                );
+                if (0 !== $return_value) {
+                    github(
+                        $payload['check_run']['url'],
+                        [
+                            'conclusion' => 'failure',
+                            'completed_at' => date(DATE_ATOM),
+                            'details_url' => $plain_log_url,
+                            'output' => [
+                                'title' => 'Composer failed to install dependencies',
+                                'summary' => 'Please review the output.',
+                            ],
+                        ],
+                        'reporting composer install failure',
+                        'application/vnd.github.antiope-preview+json',
+                        'PATCH',
+                        200
+                    );
+
+                    echo 'Checkout failed with return value ' . $return_value . ', see output above.';
+                    exit;
+                }
+
+                github(
+                    $payload['check_run']['url'],
+                    [
+                        'conclusion' => 'success',
+                        'completed_at' => date(DATE_ATOM),
+                        'details_url' => $plain_log_url,
+                        'output' => [
+                            'title' => 'Composer successfully installed dependencies',
+                            'summary' => 'All required dependencies were successfully installed.',
+                        ],
+                    ],
+                    'reporting composer check success',
+                    'application/vnd.github.antiope-preview+json',
+                    'PATCH',
+                    200
+                );
+                break;
         }
         check_run_finish();
         break;
