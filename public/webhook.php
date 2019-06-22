@@ -838,7 +838,7 @@ switch ($_SERVER['HTTP_X_GITHUB_EVENT']) {
                 $return_value = 0;
                 passthru(
                     '/bin/bash -x -e -o pipefail ' . __DIR__ . '/../checkout.sh ' . $payload['repository']['name'] . ' '
-                    . add_access_token($payload['repository']['clone_url']) . ' ' . $payload['check_suite']['head_sha']
+                    . add_access_token($payload['repository']['clone_url']) . ' ' . $payload['check_run']['head_sha']
                     . ' >> ' . $log_file . ' 2>&1',
                     $return_value
                 );
@@ -886,9 +886,9 @@ switch ($_SERVER['HTTP_X_GITHUB_EVENT']) {
                         $payload['repository']['url'] . '/check-runs',
                         [
                             'name' => $name,
-                            'head_sha' => $payload['check_suite']['head_sha'],
+                            'head_sha' => $payload['check_run']['head_sha'],
                             'details_url' => 'https://' . $_SERVER['SERVER_NAME'] . '/' . $url_prefix
-                                . $payload['repository']['name'] . '/' . $payload['check_suite']['head_sha'] . '/'
+                                . $payload['repository']['name'] . '/' . $payload['check_run']['head_sha'] . '/'
                                 . $external_id . '/',
                             'external_id' => $external_id,
                         ],
