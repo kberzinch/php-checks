@@ -609,28 +609,8 @@ switch ($_SERVER['HTTP_X_GITHUB_EVENT']) {
                                     );
                                     http_response_code(500);
                                     exit(
-                                        'Could not parse output from PHPStan ' . trim($violation['message']->__toString())
-                                    );
-                                } else {
-                                    github(
-                                        $payload['check_run']['url'],
-                                        [
-                                            'conclusion' => 'action_required',
-                                            'completed_at' => date(DATE_ATOM),
-                                            'details_url' => $plain_log_url,
-                                            'output' => [
-                                                'title' => 'Could not parse PHPStan output',
-                                                'summary' => 'Please send the output to the check developer.',
-                                            ],
-                                        ],
-                                        'reporting check_run failure',
-                                        'application/vnd.github.antiope-preview+json',
-                                        'PATCH',
-                                        200
-                                    );
-                                    http_response_code(500);
-                                    exit(
-                                        'Could not parse output from PHPStan ' . trim($violation['message']->__toString())
+                                        'Could not parse output from PHPStan '
+                                            . trim($violation['message']->__toString())
                                     );
                                 }
                             }
