@@ -575,7 +575,7 @@ switch ($_SERVER['HTTP_X_GITHUB_EVENT']) {
                     $files_with_issues++;
                     foreach ($file->children() as $violation) {
                         if (null === $file['name']) {
-                            // this is an unmatched ignore
+                            // this is an unmatched ignore, or a missing delimiter
                             // find in the neon file
 
                             $matches = [];
@@ -585,26 +585,54 @@ switch ($_SERVER['HTTP_X_GITHUB_EVENT']) {
                                 $matches
                             )
                             ) {
-                                github(
-                                    $payload['check_run']['url'],
-                                    [
-                                        'conclusion' => 'action_required',
-                                        'completed_at' => date(DATE_ATOM),
-                                        'details_url' => $plain_log_url,
-                                        'output' => [
-                                            'title' => 'Could not parse PHPStan output',
-                                            'summary' => 'Please send the output to the check developer.',
+                                if (1 !== preg_match(
+                                    '/No ending delimiter (.+) found in pattern: \./',
+                                    trim($violation['message']->__toString()),
+                                    $matches
+                                )
+                                ) {
+                                    github(
+                                        $payload['check_run']['url'],
+                                        [
+                                            'conclusion' => 'action_required',
+                                            'completed_at' => date(DATE_ATOM),
+                                            'details_url' => $plain_log_url,
+                                            'output' => [
+                                                'title' => 'Could not parse PHPStan output',
+                                                'summary' => 'Please send the output to the check developer.',
+                                            ],
                                         ],
-                                    ],
-                                    'reporting check_run failure',
-                                    'application/vnd.github.antiope-preview+json',
-                                    'PATCH',
-                                    200
-                                );
-                                http_response_code(500);
-                                exit(
-                                    'Could not parse output from PHPStan ' . trim($violation['message']->__toString())
-                                );
+                                        'reporting check_run failure',
+                                        'application/vnd.github.antiope-preview+json',
+                                        'PATCH',
+                                        200
+                                    );
+                                    http_response_code(500);
+                                    exit(
+                                        'Could not parse output from PHPStan ' . trim($violation['message']->__toString())
+                                    );
+                                } else {
+                                    github(
+                                        $payload['check_run']['url'],
+                                        [
+                                            'conclusion' => 'action_required',
+                                            'completed_at' => date(DATE_ATOM),
+                                            'details_url' => $plain_log_url,
+                                            'output' => [
+                                                'title' => 'Could not parse PHPStan output',
+                                                'summary' => 'Please send the output to the check developer.',
+                                            ],
+                                        ],
+                                        'reporting check_run failure',
+                                        'application/vnd.github.antiope-preview+json',
+                                        'PATCH',
+                                        200
+                                    );
+                                    http_response_code(500);
+                                    exit(
+                                        'Could not parse output from PHPStan ' . trim($violation['message']->__toString())
+                                    );
+                                }
                             }
 
                             $search = $matches[1];
