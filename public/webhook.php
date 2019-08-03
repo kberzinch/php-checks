@@ -586,7 +586,7 @@ switch ($_SERVER['HTTP_X_GITHUB_EVENT']) {
                             )
                             ) {
                                 if (1 !== preg_match(
-                                    '/No ending delimiter (.+) found in pattern: \./',
+                                    '/No ending delimiter (.+) found in pattern:/',
                                     trim($violation['message']->__toString()),
                                     $matches
                                 )
