@@ -4,4 +4,3 @@ parameters:
 includes:
   - %rootDir%/../phpstan-strict-rules/rules.neon
   - %rootDir%/../phpstan-deprecation-rules/rules.neon
-  - %rootDir%/../../nunomaduro/larastan/extension.neon

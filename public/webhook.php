@@ -269,7 +269,7 @@ switch ($_SERVER['HTTP_X_GITHUB_EVENT']) {
                 } else {
                     $total_annotations = count($annotations);
                     $chunks = array_chunk($annotations, 50);
-                    for ($i = 0; $i < ($total_annotations / 50); $i++) {
+                    for ($i = 0; $i < $total_annotations / 50; $i++) {
                         github(
                             $payload['check_run']['url'],
                             [
@@ -379,7 +379,7 @@ switch ($_SERVER['HTTP_X_GITHUB_EVENT']) {
                 } else {
                     $total_annotations = count($annotations);
                     $chunks = array_chunk($annotations, 50);
-                    for ($i = 0; $i < ($total_annotations / 50); $i++) {
+                    for ($i = 0; $i < $total_annotations / 50; $i++) {
                         github(
                             $payload['check_run']['url'],
                             [
@@ -500,7 +500,7 @@ switch ($_SERVER['HTTP_X_GITHUB_EVENT']) {
                 } else {
                     $total_annotations = count($annotations);
                     $chunks = array_chunk($annotations, 50);
-                    for ($i = 0; $i < ($total_annotations / 50); $i++) {
+                    for ($i = 0; $i < $total_annotations / 50; $i++) {
                         github(
                             $payload['check_run']['url'],
                             [
@@ -725,7 +725,7 @@ switch ($_SERVER['HTTP_X_GITHUB_EVENT']) {
                 } else {
                     $total_annotations = count($annotations);
                     $chunks = array_chunk($annotations, 50);
-                    for ($i = 0; $i < ($total_annotations / 50); $i++) {
+                    for ($i = 0; $i < $total_annotations / 50; $i++) {
                         github(
                             $payload['check_run']['url'],
                             [
@@ -826,7 +826,7 @@ switch ($_SERVER['HTTP_X_GITHUB_EVENT']) {
                 } else {
                     $total_annotations = count($annotations);
                     $chunks = array_chunk($annotations, 50);
-                    for ($i = 0; $i < ($total_annotations / 50); $i++) {
+                    for ($i = 0; $i < $total_annotations / 50; $i++) {
                         github(
                             $payload['check_run']['url'],
                             [

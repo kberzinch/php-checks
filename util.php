@@ -5,7 +5,6 @@ declare(strict_types=1);
 // phpcs:disable Generic.NamingConventions.CamelCapsFunctionName.NotCamelCaps
 // phpcs:disable SlevomatCodingStandard.TypeHints.DisallowMixedTypeHint.DisallowedMixedTypeHint
 
-
 use SimpleJWT\JWT;
 use SimpleJWT\Keys\KeySet;
 use SimpleJWT\Keys\RSAKey;
@@ -212,8 +211,6 @@ function api_base(): string
 
 /**
  * Helper to call once a check run finishes to notify Slack if this is the last one
- *
- * @return void
  */
 function check_run_finish(): void
 {
@@ -273,8 +270,6 @@ function check_run_finish(): void
  * Fires a Slack notification when all checks complete successfully.
  *
  * @param array<string,mixed> $data the message
- *
- * @return void
  *
  * @SuppressWarnings(PHPMD.ExitExpression)
  */
