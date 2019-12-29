@@ -1,4 +1,6 @@
-<?php declare(strict_types = 1);
+<?php
+
+declare(strict_types=1);
 
 require __DIR__ . '/../vendor/autoload.php';
 require_once '../config.php';
@@ -115,12 +117,13 @@ switch ($_SERVER['HTTP_X_GITHUB_EVENT']) {
 
                     if (false !== strpos($syntax_log[$i], 'PHP Parse error:  syntax error, ')) {
                         $matches = [];
-                        if (1 !== preg_match(
-                            '/in (\S+) on line ([[:digit:]]+)$/',
-                            $syntax_log[$i],
-                            $matches,
-                            PREG_OFFSET_CAPTURE
-                        )
+                        if (
+                            1 !== preg_match(
+                                '/in (\S+) on line ([[:digit:]]+)$/',
+                                $syntax_log[$i],
+                                $matches,
+                                PREG_OFFSET_CAPTURE
+                            )
                         ) {
                             github(
                                 $payload['check_run']['url'],
@@ -151,12 +154,13 @@ switch ($_SERVER['HTTP_X_GITHUB_EVENT']) {
                         ];
                     } elseif (false !== strpos($syntax_log[$i], 'PHP Fatal error: ')) {
                         $matches = [];
-                        if (1 !== preg_match(
-                            '/in (\S+) on line ([[:digit:]]+)$/',
-                            $syntax_log[$i],
-                            $matches,
-                            PREG_OFFSET_CAPTURE
-                        )
+                        if (
+                            1 !== preg_match(
+                                '/in (\S+) on line ([[:digit:]]+)$/',
+                                $syntax_log[$i],
+                                $matches,
+                                PREG_OFFSET_CAPTURE
+                            )
                         ) {
                             github(
                                 $payload['check_run']['url'],
@@ -187,12 +191,13 @@ switch ($_SERVER['HTTP_X_GITHUB_EVENT']) {
                         ];
                     } elseif (false !== strpos($syntax_log[$i], 'PHP Warning: ')) {
                         $matches = [];
-                        if (1 !== preg_match(
-                            '/in (\S+) on line ([[:digit:]]+)$/',
-                            $syntax_log[$i],
-                            $matches,
-                            PREG_OFFSET_CAPTURE
-                        )
+                        if (
+                            1 !== preg_match(
+                                '/in (\S+) on line ([[:digit:]]+)$/',
+                                $syntax_log[$i],
+                                $matches,
+                                PREG_OFFSET_CAPTURE
+                            )
                         ) {
                             github(
                                 $payload['check_run']['url'],
@@ -579,17 +584,19 @@ switch ($_SERVER['HTTP_X_GITHUB_EVENT']) {
                             // find in the neon file
 
                             $matches = [];
-                            if (1 !== preg_match(
-                                '/Ignored error pattern (.+) was not matched in reported errors\./',
-                                trim($violation['message']->__toString()),
-                                $matches
-                            )
-                            ) {
-                                if (1 !== preg_match(
-                                    '/No ending delimiter .+ found in pattern: (.+)\./',
+                            if (
+                                1 !== preg_match(
+                                    '/Ignored error pattern (.+) was not matched in reported errors\./',
                                     trim($violation['message']->__toString()),
                                     $matches
                                 )
+                            ) {
+                                if (
+                                    1 !== preg_match(
+                                        '/No ending delimiter .+ found in pattern: (.+)\./',
+                                        trim($violation['message']->__toString()),
+                                        $matches
+                                    )
                                 ) {
                                     github(
                                         $payload['check_run']['url'],

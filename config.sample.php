@@ -1,8 +1,10 @@
-<?php declare(strict_types = 1);
+<?php
 
-///////////////////////////////////////////////////////////
-// Copy this file to config.php and edit as appropriate. //
-///////////////////////////////////////////////////////////
+/**
+ * Copy this file to config.php and edit as appropriate.
+ */
+
+declare(strict_types=1);
 
 /**
  * Set $webhook_secret to the same value you entered in the GitHub webhook
