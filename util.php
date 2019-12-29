@@ -1,6 +1,15 @@
-<?php declare(strict_types = 1);
+<?php
 
-// phpcs:disable Generic.NamingConventions.CamelCapsFunctionName.NotCamelCaps,SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingTraversableReturnTypeHintSpecification,SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingTraversableParameterTypeHintSpecification
+declare(strict_types=1);
+
+// phpcs:disable Generic.NamingConventions.CamelCapsFunctionName.NotCamelCaps
+// phpcs:disable SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingTraversableReturnTypeHintSpecification
+// phpcs:disable SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingTraversableParameterTypeHintSpecification
+
+
+use SimpleJWT\JWT;
+use SimpleJWT\Keys\KeySet;
+use SimpleJWT\Keys\RSAKey;
 
 /**
  * Verifies and parses the payload
@@ -149,13 +158,13 @@ function app_token(): string
         exit('Could not read private key for ' . which_github());
     }
 
-    $key = new SimpleJWT\Keys\RSAKey($key, 'pem');
-    $set = new SimpleJWT\Keys\KeySet();
+    $key = new RSAKey($key, 'pem');
+    $set = new KeySet();
     $set->add($key);
 
     $headers = ['alg' => 'RS256', 'typ' => 'JWT'];
     $claims = ['iss' => $app_id[which_github()], 'exp' => time() + 5];
-    $jwt = new SimpleJWT\JWT($headers, $claims);
+    $jwt = new JWT($headers, $claims);
 
     return $jwt->encode($set);
 }
