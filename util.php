@@ -3,8 +3,7 @@
 declare(strict_types=1);
 
 // phpcs:disable Generic.NamingConventions.CamelCapsFunctionName.NotCamelCaps
-// phpcs:disable SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingTraversableReturnTypeHintSpecification
-// phpcs:disable SlevomatCodingStandard.TypeHints.TypeHintDeclaration.MissingTraversableParameterTypeHintSpecification
+// phpcs:disable SlevomatCodingStandard.TypeHints.DisallowMixedTypeHint.DisallowedMixedTypeHint
 
 
 use SimpleJWT\JWT;
@@ -14,7 +13,9 @@ use SimpleJWT\Keys\RSAKey;
 /**
  * Verifies and parses the payload
  *
- * @SuppressWarnings(PHPMD.ExitExpression)
+ * @return array<string,mixed> Return the decoded payload from GitHub
+ *
+ * @SuppressWarnings(PHPMD.ExitExpression,PHPMD.UndefinedVariable)
  */
 function payload(): array
 {
@@ -53,7 +54,9 @@ function add_access_token(string $url): string
  * Sends $data to $url
  *
  * @param string $url  The GitHub API URL to hit
- * @param array  $data The data to send
+ * @param array<string,mixed>  $data The data to send
+ *
+ * @return array<string,mixed> The response from GitHub
  *
  * @SuppressWarnings(PHPMD.ExitExpression)
  */
@@ -114,6 +117,8 @@ function token(): string
 
 /**
  * Checks the commit status for the current commit
+ *
+ * @return array<string,string> the response from github
  */
 function get_commit_status(): array
 {
@@ -266,7 +271,7 @@ function check_run_finish(): void
 /**
  * Fires a Slack notification when all checks complete successfully.
  *
- * @param array $data the message
+ * @param array<string,mixed> $data the message
  *
  * @return void
  *

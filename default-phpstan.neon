@@ -1,6 +1,6 @@
 parameters:
   excludes_analyse:
     - %currentWorkingDirectory%/vendor/*
-  includes:
-    - %rootDir%/../phpstan-strict-rules/rules.neon
-    - %rootDir%/../phpstan-deprecation-rules/rules.neon
+includes:
+  - %rootDir%/../phpstan-strict-rules/rules.neon
+  - %rootDir%/../phpstan-deprecation-rules/rules.neon

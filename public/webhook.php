@@ -799,7 +799,7 @@ switch ($_SERVER['HTTP_X_GITHUB_EVENT']) {
                             $message['description']
                         ),
                     ];
-                    if (in_array($message['location']['path'], $files)) {
+                    if (in_array($message['location']['path'], $files, true)) {
                         continue;
                     }
 
