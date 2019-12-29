@@ -15,7 +15,8 @@ use SimpleJWT\Keys\RSAKey;
  *
  * @return array<string,mixed> Return the decoded payload from GitHub
  *
- * @SuppressWarnings(PHPMD.ExitExpression,PHPMD.UndefinedVariable)
+ * @SuppressWarnings(PHPMD.ExitExpression)
+ * @SuppressWarnings(PHPMD.UndefinedVariable)
  */
 function payload(): array
 {
