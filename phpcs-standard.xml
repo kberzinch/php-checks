@@ -4,11 +4,19 @@
 
     <config name="installed_paths" value="../../slevomat/coding-standard"/>
 
-    <exclude-pattern>vendor</exclude-pattern>
-    <exclude-pattern>node_modules</exclude-pattern>
-    <exclude-pattern>*.min.js</exclude-pattern>
     <exclude-pattern>*.blade.php</exclude-pattern>
-    <exclude-pattern>bootstrap/cache</exclude-pattern>
+    <exclude-pattern>*.min.js</exclude-pattern>
+    <exclude-pattern>/_ide_helper.php</exclude-pattern>
+    <exclude-pattern>/bootstrap/cache/</exclude-pattern>
+    <exclude-pattern>/node_modules/</exclude-pattern>
+    <exclude-pattern>/public/</exclude-pattern>
+    <exclude-pattern>/storage/</exclude-pattern>
+    <exclude-pattern>/vendor/</exclude-pattern>
+
+    <rule ref="PSR1.Classes.ClassDeclaration.MissingNamespace">
+        <exclude-pattern>/database/migrations/</exclude-pattern>
+        <exclude-pattern>/database/seeds/</exclude-pattern>
+    </rule>
 
     <rule ref="PSR12"/>
 
@@ -118,6 +126,7 @@
 
     <rule ref="SlevomatCodingStandard.Functions">
         <exclude name="SlevomatCodingStandard.Functions.TrailingCommaInCall"/>
+        <exclude name="SlevomatCodingStandard.Functions.RequireArrowFunction"/>
     </rule>
 
     <rule ref="SlevomatCodingStandard.Namespaces.AlphabeticallySortedUses"/>
@@ -149,8 +158,9 @@
 
     <rule ref="SlevomatCodingStandard.PHP"/>
 
-    <rule ref="SlevomatCodingStandard.TypeHints">
-        <exclude name="SlevomatCodingStandard.TypeHints.DeclareStrictTypes"/>
+    <rule ref="SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingAnyTypeHint">
+        <exclude-pattern>/app/Http/Controllers/</exclude-pattern>
+        <exclude-pattern>/app/Http/Middleware/</exclude-pattern>
     </rule>
 
     <rule ref="SlevomatCodingStandard.TypeHints.DeclareStrictTypes">
@@ -161,9 +171,14 @@
         </properties>
     </rule>
 
+    <rule ref="SlevomatCodingStandard.TypeHints"/>
+
     <rule ref="Squiz.Arrays">
         <exclude name="Squiz.Arrays.ArrayDeclaration"/>
-        <exclude name="Squiz.Arrays.ArrayDeclaration"/>
+    </rule>
+
+    <rule ref="Squiz.Classes.ClassFileName.NoMatch">
+        <exclude-pattern>/database/migrations/</exclude-pattern>
     </rule>
 
     <rule ref="Squiz.Classes"/>
@@ -201,11 +216,6 @@
         <exclude name="Squiz.Strings.ConcatenationSpacing.PaddingFound"/>
     </rule>
 
-    <rule ref="Squiz.WhiteSpace">
-        <exclude name="Squiz.WhiteSpace.FunctionSpacing"/>
-        <exclude name="Squiz.WhiteSpace.FunctionClosingBraceSpace.SpacingBeforeClose"/>
-        <exclude name="Squiz.WhiteSpace.MemberVarSpacing"/>
-    </rule>
     <rule ref="Squiz.WhiteSpace.FunctionSpacing">
         <properties>
             <property name="spacing" value="1"/>
@@ -218,5 +228,9 @@
             <property name="spacing" value="1"/>
             <property name="spacingBeforeFirst" value="0"/>
         </properties>
+    </rule>
+
+    <rule ref="Squiz.WhiteSpace">
+        <exclude name="Squiz.WhiteSpace.FunctionClosingBraceSpace.SpacingBeforeClose"/>
     </rule>
 </ruleset>
