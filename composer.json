@@ -6,7 +6,7 @@
         "phpstan/phpstan" : "0.12.7",
         "phpstan/phpstan-strict-rules" : "0.12.2",
         "phpstan/phpstan-deprecation-rules" : "0.12.2",
-        "phan/phan": "2.4.7",
+        "phan/phan": "2.4.8",
         "slevomat/coding-standard": "6.1.1",
         "nunomaduro/larastan": "0.5.0",
         "orchestra/testbench": "4.5.0"
