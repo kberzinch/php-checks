@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2dc58f27e158a6577fdf595a705c4b8d",
+    "content-hash": "a19bd7b682c83d8d0955fd52402df0fb",
     "packages": [
         {
             "name": "composer/ca-bundle",
@@ -1566,16 +1566,16 @@
         },
         {
             "name": "nunomaduro/larastan",
-            "version": "v0.5.3",
+            "version": "v0.5.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nunomaduro/larastan.git",
-                "reference": "8e7989f32519c8e8c7b8b61f51b0ef0c97ef6c9d"
+                "reference": "d5ef8812cefb4ef951f18f27e70e5fd8a81cd2bf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nunomaduro/larastan/zipball/8e7989f32519c8e8c7b8b61f51b0ef0c97ef6c9d",
-                "reference": "8e7989f32519c8e8c7b8b61f51b0ef0c97ef6c9d",
+                "url": "https://api.github.com/repos/nunomaduro/larastan/zipball/d5ef8812cefb4ef951f18f27e70e5fd8a81cd2bf",
+                "reference": "d5ef8812cefb4ef951f18f27e70e5fd8a81cd2bf",
                 "shasum": ""
             },
             "require": {
@@ -1648,7 +1648,7 @@
                     "type": "patreon"
                 }
             ],
-            "time": "2020-03-21T20:08:13+00:00"
+            "time": "2020-03-22T21:22:21+00:00"
         },
         {
             "name": "opis/closure",
