@@ -8,7 +8,7 @@
         "phpstan/phpstan-deprecation-rules" : "0.12.2",
         "phan/phan": "2.6.1",
         "slevomat/coding-standard": "6.1.5",
-        "nunomaduro/larastan": "0.5.3",
+        "nunomaduro/larastan": "0.5.4",
         "orchestra/testbench": "4.6.0"
     },
     "autoload": {
