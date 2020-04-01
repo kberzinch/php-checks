@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "392207105daaa3ceced3a16cd4159bfb",
+    "content-hash": "13aa19de6388e0ae6d5cc58df3179014",
     "packages": [
         {
             "name": "composer/ca-bundle",
@@ -1921,16 +1921,16 @@
         },
         {
             "name": "phan/phan",
-            "version": "2.6.1",
+            "version": "2.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phan/phan.git",
-                "reference": "184c591e5b31c1f98426ed8e147a61864bd0cc96"
+                "reference": "c1694f08654e0cd534d1ecda10f242c77a44f235"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phan/phan/zipball/184c591e5b31c1f98426ed8e147a61864bd0cc96",
-                "reference": "184c591e5b31c1f98426ed8e147a61864bd0cc96",
+                "url": "https://api.github.com/repos/phan/phan/zipball/c1694f08654e0cd534d1ecda10f242c77a44f235",
+                "reference": "c1694f08654e0cd534d1ecda10f242c77a44f235",
                 "shasum": ""
             },
             "require": {
@@ -1945,7 +1945,8 @@
                 "php": "^7.1.0",
                 "sabre/event": "^5.0",
                 "symfony/console": "^2.3|^3.0|^4.0|^5.0",
-                "symfony/polyfill-mbstring": "^1.11.0"
+                "symfony/polyfill-mbstring": "^1.11.0",
+                "symfony/polyfill-php72": "^1.15"
             },
             "require-dev": {
                 "brianium/paratest": "^4.0.0",
@@ -1990,7 +1991,7 @@
                 "php",
                 "static"
             ],
-            "time": "2020-03-13T21:34:53+00:00"
+            "time": "2020-04-01T14:15:47+00:00"
         },
         {
             "name": "phar-io/manifest",
@@ -4206,16 +4207,16 @@
         },
         {
             "name": "symfony/console",
-            "version": "v4.4.5",
+            "version": "v4.4.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/console.git",
-                "reference": "4fa15ae7be74e53f6ec8c83ed403b97e23b665e9"
+                "reference": "10bb3ee3c97308869d53b3e3d03f6ac23ff985f7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/console/zipball/4fa15ae7be74e53f6ec8c83ed403b97e23b665e9",
-                "reference": "4fa15ae7be74e53f6ec8c83ed403b97e23b665e9",
+                "url": "https://api.github.com/repos/symfony/console/zipball/10bb3ee3c97308869d53b3e3d03f6ac23ff985f7",
+                "reference": "10bb3ee3c97308869d53b3e3d03f6ac23ff985f7",
                 "shasum": ""
             },
             "require": {
@@ -4292,7 +4293,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2020-02-24T13:10:00+00:00"
+            "time": "2020-03-30T11:41:10+00:00"
         },
         {
             "name": "symfony/css-selector",
