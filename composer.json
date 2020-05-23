@@ -9,7 +9,7 @@
         "phan/phan": "2.7.1",
         "slevomat/coding-standard": "6.2.0",
         "nunomaduro/larastan": "0.5.8",
-        "orchestra/testbench": "4.6.0"
+        "orchestra/testbench": "5.2.0"
     },
     "autoload": {
         "files": [
