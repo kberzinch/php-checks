@@ -18,12 +18,24 @@
         <exclude-pattern>/database/seeds/</exclude-pattern>
     </rule>
 
+    <rule ref="PSR1.Files.SideEffects.FoundWithSymbols">
+        <exclude-pattern>/database/factories/ModelFactory.php</exclude-pattern>
+    </rule>
+
     <rule ref="PSR12"/>
 
     <rule ref="Generic.Arrays.ArrayIndent"/>
     <rule ref="Generic.Arrays.DisallowLongArraySyntax"/>
 
     <rule ref="Generic.Classes.DuplicateClassName"/>
+
+    <rule ref="Generic.CodeAnalysis.UnusedFunctionParameter">
+        <exclude-pattern>/app/Http/Resources/</exclude-pattern>
+        <exclude-pattern>/app/Notifiables/</exclude-pattern>
+        <exclude-pattern>/app/Notifications/</exclude-pattern>
+        <exclude-pattern>/app/Nova/</exclude-pattern>
+        <exclude-pattern>/app/Policies/</exclude-pattern>
+    </rule>
 
     <rule ref="Generic.CodeAnalysis"/>
 
@@ -138,6 +150,14 @@
 
     <rule ref="SlevomatCodingStandard.Exceptions"/>
 
+    <rule ref="SlevomatCodingStandard.Functions.UnusedParameter">
+        <exclude-pattern>/app/Http/Resources/</exclude-pattern>
+        <exclude-pattern>/app/Notifiables/</exclude-pattern>
+        <exclude-pattern>/app/Notifications/</exclude-pattern>
+        <exclude-pattern>/app/Nova/</exclude-pattern>
+        <exclude-pattern>/app/Policies/</exclude-pattern>
+    </rule>
+
     <rule ref="SlevomatCodingStandard.Functions">
         <exclude name="SlevomatCodingStandard.Functions.TrailingCommaInCall"/>
         <exclude name="SlevomatCodingStandard.Functions.RequireArrowFunction"/>
@@ -172,13 +192,23 @@
 
     <rule ref="SlevomatCodingStandard.PHP"/>
 
+    <rule ref="SlevomatCodingStandard.TypeHints.DisallowMixedTypeHint.DisallowedMixedTypeHint">
+        <exclude-pattern>/app/Http/Resources/</exclude-pattern>
+    </rule>
+
     <rule ref="SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingAnyTypeHint">
         <exclude-pattern>/app/Http/Controllers/</exclude-pattern>
         <exclude-pattern>/app/Http/Middleware/</exclude-pattern>
     </rule>
 
     <rule ref="SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint">
-        <exclude-pattern>/app/Http/Resources/</exclude-pattern>
+        <exclude-pattern>/app/Http/Resources</exclude-pattern>
+        <exclude-pattern>/app/Nova/</exclude-pattern>
+    </rule>
+
+    <rule ref="SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingAnyTypeHint">
+        <exclude-pattern>/app/Http/Controllers/</exclude-pattern>
+        <exclude-pattern>/app/Http/Middleware/</exclude-pattern>
     </rule>
 
     <rule ref="SlevomatCodingStandard.TypeHints">
