@@ -282,5 +282,6 @@
 
     <rule ref="Squiz.WhiteSpace">
         <exclude name="Squiz.WhiteSpace.FunctionClosingBraceSpace.SpacingBeforeClose"/>
+        <exclude name="Squiz.WhiteSpace.ObjectOperatorSpacing.Before"/>
     </rule>
 </ruleset>
