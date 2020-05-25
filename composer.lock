@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "03414320abe2d5bcae27df865b1faa86",
+    "content-hash": "e4c351750007a1e61e3e1026165ab6b5",
     "packages": [
         {
             "name": "brick/math",
@@ -4352,16 +4352,16 @@
         },
         {
             "name": "slevomat/coding-standard",
-            "version": "6.3.6",
+            "version": "6.3.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/slevomat/coding-standard.git",
-                "reference": "7876032a4f55acf2de2cf3cd538feaf98a8a0fee"
+                "reference": "1f7bd4b5c11cf4a164a400c937483785b0f4eb9e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/slevomat/coding-standard/zipball/7876032a4f55acf2de2cf3cd538feaf98a8a0fee",
-                "reference": "7876032a4f55acf2de2cf3cd538feaf98a8a0fee",
+                "url": "https://api.github.com/repos/slevomat/coding-standard/zipball/1f7bd4b5c11cf4a164a400c937483785b0f4eb9e",
+                "reference": "1f7bd4b5c11cf4a164a400c937483785b0f4eb9e",
                 "shasum": ""
             },
             "require": {
@@ -4405,7 +4405,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2020-05-22T15:11:14+00:00"
+            "time": "2020-05-25T13:39:15+00:00"
         },
         {
             "name": "squizlabs/php_codesniffer",
