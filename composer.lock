@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7f333d05f0d868cc0c092a1c118fc025",
+    "content-hash": "f77763b5a763a3da1280deaf5122c1f8",
     "packages": [
         {
             "name": "brick/math",
@@ -950,16 +950,16 @@
         },
         {
             "name": "kelvinmo/simplejwt",
-            "version": "v0.2.5",
+            "version": "v0.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/kelvinmo/simplejwt.git",
-                "reference": "c7e2c81d15b4f87c9c122f88a80ce5d90977f62b"
+                "reference": "99d18a0cd9e3de975f0d7f24e7845b55b74312db"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kelvinmo/simplejwt/zipball/c7e2c81d15b4f87c9c122f88a80ce5d90977f62b",
-                "reference": "c7e2c81d15b4f87c9c122f88a80ce5d90977f62b",
+                "url": "https://api.github.com/repos/kelvinmo/simplejwt/zipball/99d18a0cd9e3de975f0d7f24e7845b55b74312db",
+                "reference": "99d18a0cd9e3de975f0d7f24e7845b55b74312db",
                 "shasum": ""
             },
             "require": {
@@ -1000,7 +1000,7 @@
                 "JWE",
                 "jwt"
             ],
-            "time": "2019-06-14T11:01:39+00:00"
+            "time": "2020-06-15T21:47:11+00:00"
         },
         {
             "name": "laravel/framework",
