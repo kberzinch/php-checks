@@ -1,3 +1,9 @@
+### :warning: This project has been deprecated.
+
+Most of this functionality has moved to https://github.com/kberzinch/php-checks-concourse.
+
+----
+
 # php-checks
 [![GitHub license](https://img.shields.io/github/license/kberzinch/php-checks.svg?style=flat-square)](https://raw.githubusercontent.com/kberzinch/php-checks/master/LICENSE.md)
 
