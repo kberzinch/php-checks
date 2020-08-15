@@ -1,6 +1,6 @@
 ### :warning: This project has been deprecated.
 
-Most of this functionality has moved to https://github.com/kberzinch/php-checks-concourse.
+Most of this functionality has moved to https://github.com/RoboJackets/concourse-github-check-resource.
 
 ----
 
